@@ -27,9 +27,11 @@ function MessageList({ messages, currentUserId, partnerTyping, partnerNickname }
     const spoilerRegex = /\|\|(.*?)\|\|/g;
     const parts = [];
     let lastIndex = 0;
-    let match;
-
-    while ((match = spoilerRegex.exec(text)) !== null) {
+    
+    // Use matchAll for safer iteration
+    const matches = [...text.matchAll(spoilerRegex)];
+    
+    matches.forEach((match) => {
       // Add text before spoiler
       if (match.index > lastIndex) {
         parts.push({
@@ -45,7 +47,7 @@ function MessageList({ messages, currentUserId, partnerTyping, partnerNickname }
       });
       
       lastIndex = match.index + match[0].length;
-    }
+    });
     
     // Add remaining text
     if (lastIndex < text.length) {

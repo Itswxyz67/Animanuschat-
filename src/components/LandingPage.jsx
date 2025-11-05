@@ -265,7 +265,7 @@ function LandingPage({ onStartChat, onOpenSettings }) {
               <IoShieldCheckmark className="text-green-500" /> We don&apos;t collect any personal data.
             </p>
             <p className="text-xs text-gray-600 flex items-center justify-center gap-1">
-              💡 Use ||text|| for spoilers that reveal on click
+              <HiSparkles className="text-yellow-400" /> Use ||text|| for spoilers that reveal on click
             </p>
           </div>
         </motion.form>

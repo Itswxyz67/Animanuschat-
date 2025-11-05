@@ -4,10 +4,21 @@ import { motion } from 'framer-motion';
 function SpoilerText({ children }) {
   const [isRevealed, setIsRevealed] = useState(false);
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setIsRevealed(!isRevealed);
+    }
+  };
+
   return (
     <span
       onClick={() => setIsRevealed(!isRevealed)}
-      className="relative inline cursor-pointer"
+      onKeyDown={handleKeyPress}
+      role="button"
+      tabIndex={0}
+      aria-label={isRevealed ? 'Spoiler revealed' : 'Click to reveal spoiler'}
+      className="relative inline cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-1 rounded"
     >
       {!isRevealed ? (
         <motion.span
