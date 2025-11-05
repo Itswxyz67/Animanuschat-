@@ -24,7 +24,20 @@ A free, anonymous 1-on-1 random chat application with no login required. Connect
 - **Animations**: Framer Motion
 - **Other**: Emoji Picker, Axios, UUID
 
-## 📦 Installation
+## 📦 Quick Setup & Deployment
+
+### 🚀 Deploy to Vercel (Recommended - 10 minutes)
+
+**Want to get your app live immediately?**
+
+👉 **Follow this guide:** [QUICK-START.md](QUICK-START.md)
+
+Or for detailed instructions: [VERCEL-SETUP.md](VERCEL-SETUP.md)
+
+**Need help finding Firebase values?** 
+👉 See: [WHERE-TO-FIND-VALUES.md](WHERE-TO-FIND-VALUES.md)
+
+### 🏠 Local Development Setup
 
 1. **Clone the repository**
    ```bash
@@ -37,32 +50,32 @@ A free, anonymous 1-on-1 random chat application with no login required. Connect
    npm install
    ```
 
-3. **Set up Firebase**
+3. **Set up Firebase** (get your config values)
    - Go to [Firebase Console](https://console.firebase.google.com/)
    - Create a new project
    - Enable Realtime Database
    - Copy your Firebase configuration
+   - 📖 **Detailed guide:** [WHERE-TO-FIND-VALUES.md](WHERE-TO-FIND-VALUES.md)
 
 4. **Configure environment variables**
-   - Copy `.env.example` to `.env`
    ```bash
    cp .env.example .env
    ```
-   - Fill in your Firebase credentials in `.env`
+   Then edit `.env` and add your Firebase credentials:
+   ```env
+   VITE_FIREBASE_API_KEY=your_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   VITE_FIREBASE_DATABASE_URL=https://your_project.firebaseio.com
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   VITE_FREEIMAGE_API_KEY=6d207e02198a847aa98d0a2a901485a5
+   ```
 
 5. **Set up Firebase Database Rules**
    - In Firebase Console, go to Realtime Database → Rules
-   - Copy the rules from `firebase.rules.json`
-   - Or use these temporary rules for development:
-   ```json
-   {
-     "rules": {
-       ".read": true,
-       ".write": true
-     }
-   }
-   ```
-   ⚠️ **Warning**: The above rules are insecure. Use proper rules for production!
+   - Copy the rules from `firebase.rules.json` and publish them
 
 6. **Run the development server**
    ```bash
@@ -71,36 +84,37 @@ A free, anonymous 1-on-1 random chat application with no login required. Connect
 
 7. **Open your browser**
    - Navigate to `http://localhost:3000`
+   - Open a second incognito window to test matchmaking
 
-## 🚀 Build for Production
+## 🚀 Deployment to Production
 
-```bash
-npm run build
-```
+### Vercel (Easiest - Recommended)
+**Step-by-step guide:** [VERCEL-SETUP.md](VERCEL-SETUP.md)
 
-The built files will be in the `dist` folder, ready to deploy.
+Quick version:
+1. Push code to GitHub
+2. Import to Vercel
+3. Add 8 environment variables
+4. Deploy!
 
-## 🌐 Deployment
+**10 minute guide:** [QUICK-START.md](QUICK-START.md)
 
-### Firebase Hosting (Recommended)
-```bash
-npm install -g firebase-tools
-firebase login
-firebase init hosting
-firebase deploy
-```
+### Other Hosting Options
 
-### Netlify
-1. Connect your GitHub repo to Netlify
-2. Set build command: `npm run build`
-3. Set publish directory: `dist`
-4. Add environment variables in Netlify dashboard
+See [DEPLOYMENT.md](DEPLOYMENT.md) for:
+- Firebase Hosting
+- Netlify
+- Custom VPS/Server
 
-### Vercel
-```bash
-npm install -g vercel
-vercel
-```
+## 📚 Documentation
+
+- 📖 **[Quick Start Guide](QUICK-START.md)** - Deploy in 10 minutes
+- 🚀 **[Vercel Setup](VERCEL-SETUP.md)** - Detailed Vercel deployment
+- 🔍 **[Where to Find Values](WHERE-TO-FIND-VALUES.md)** - Firebase config help
+- 📦 **[Full Deployment Guide](DEPLOYMENT.md)** - All hosting options
+- 🔒 **[Security Policy](SECURITY.md)** - Security info & vulnerabilities
+- 🎯 **[Features Overview](FEATURES.md)** - Complete feature list
+- 🤝 **[Contributing Guide](CONTRIBUTING.md)** - How to contribute
 
 ## ⚙️ Environment Variables
 
