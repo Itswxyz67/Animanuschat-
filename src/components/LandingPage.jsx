@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { IoLockClosed, IoShieldCheckmark, IoChatbubbles } from 'react-icons/io5';
+import { FaRocket, FaUserSecret } from 'react-icons/fa';
+import { HiSparkles } from 'react-icons/hi2';
 
 function LandingPage({ onStartChat }) {
   // Load saved preferences from localStorage
@@ -127,21 +130,29 @@ function LandingPage({ onStartChat }) {
         {/* Logo/Header */}
         <div className="text-center mb-8">
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            className="text-7xl mb-4"
+            className="text-7xl mb-4 inline-block"
           >
-            👻
+            <IoChatbubbles className="text-sky-500" />
           </motion.div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-sky-400 to-sky-600 bg-clip-text text-transparent mb-3">GhostLink</h1>
-          <p className="text-gray-300 text-lg">Anonymous 1-on-1 Random Chat</p>
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mt-3">
-            <span className="flex items-center gap-1">🔒 No login</span>
-            <span>•</span>
-            <span className="flex items-center gap-1">👻 Anonymous</span>
-            <span>•</span>
-            <span className="flex items-center gap-1">💬 Free</span>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-sky-400 via-purple-500 to-sky-600 bg-clip-text text-transparent mb-3 animate-gradient">GhostLink</h1>
+          <p className="text-gray-300 text-lg flex items-center justify-center gap-2">
+            <HiSparkles className="text-sky-400" />
+            Anonymous 1-on-1 Random Chat
+            <HiSparkles className="text-sky-400" />
+          </p>
+          <div className="flex items-center justify-center gap-3 text-sm text-gray-400 mt-4">
+            <span className="flex items-center gap-1 bg-slate-800/50 px-3 py-1.5 rounded-full">
+              <IoLockClosed className="text-sky-400" /> No login
+            </span>
+            <span className="flex items-center gap-1 bg-slate-800/50 px-3 py-1.5 rounded-full">
+              <FaUserSecret className="text-purple-400" /> Anonymous
+            </span>
+            <span className="flex items-center gap-1 bg-slate-800/50 px-3 py-1.5 rounded-full">
+              <IoShieldCheckmark className="text-green-400" /> Free
+            </span>
           </div>
         </div>
 
@@ -229,18 +240,18 @@ function LandingPage({ onStartChat }) {
           {/* Start Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white text-lg py-4 rounded-xl font-bold transition-all shadow-lg shadow-sky-500/30 hover:shadow-xl hover:shadow-sky-500/40 transform hover:scale-[1.02]"
+            className="w-full bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white text-lg py-4 rounded-xl font-bold transition-all shadow-lg shadow-sky-500/30 hover:shadow-xl hover:shadow-sky-500/40 transform hover:scale-[1.02] flex items-center justify-center gap-2"
           >
-            🚀 Start Chatting
+            <FaRocket className="text-xl" /> Start Chatting
           </button>
 
           {/* Privacy Notice */}
           <div className="text-center">
-            <p className="text-xs text-gray-500 leading-relaxed">
-              🔒 Your privacy is protected. Messages are temporary and deleted when you disconnect.
+            <p className="text-xs text-gray-500 leading-relaxed flex items-center justify-center gap-1">
+              <IoLockClosed className="text-sky-400" /> Your privacy is protected. Messages are temporary and deleted when you disconnect.
             </p>
-            <p className="text-xs text-gray-600 mt-1">
-              We don&apos;t collect any personal data.
+            <p className="text-xs text-gray-600 mt-1 flex items-center justify-center gap-1">
+              <IoShieldCheckmark className="text-green-500" /> We don&apos;t collect any personal data.
             </p>
           </div>
         </motion.form>

@@ -6,6 +6,11 @@ import { uploadImage } from '../services/imageUpload';
 import { canMatch, getMatchScore, filterNSFW } from '../utils/filters';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
+import { IoClose } from 'react-icons/io5';
+import { MdSkipNext } from 'react-icons/md';
+import { FaUserSecret } from 'react-icons/fa';
+import { HiStatusOnline, HiStatusOffline } from 'react-icons/hi';
+import { HiSparkles } from 'react-icons/hi2';
 
 function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSearching }) {
   const [messages, setMessages] = useState([]);
@@ -340,30 +345,66 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
       id: `temp-${tempId}`,
       senderId: userId,
       senderNickname: userProfile.nickname,
-      text: 'Uploading image...',
+      text: '📤 Uploading image...',
       timestamp: tempId,
       type: 'text',
       isTemp: true
     }]);
 
-    const result = await uploadImage(file);
+    try {
+      const result = await uploadImage(file);
 
-    // Remove temp message
-    setMessages(prev => prev.filter(m => m.id !== `temp-${tempId}`));
+      // Remove temp message
+      setMessages(prev => prev.filter(m => m.id !== `temp-${tempId}`));
 
-    if (result.success) {
-      const messagesRef = ref(db, `rooms/${roomId}/messages`);
-      const newMessageRef = push(messagesRef);
+      if (result.success) {
+        const messagesRef = ref(db, `rooms/${roomId}/messages`);
+        const newMessageRef = push(messagesRef);
 
-      await set(newMessageRef, {
+        await set(newMessageRef, {
+          senderId: userId,
+          senderNickname: userProfile.nickname,
+          imageUrl: result.url,
+          timestamp: Date.now(),
+          type: 'image'
+        });
+      } else {
+        // Show error in chat
+        setMessages(prev => [...prev, {
+          id: `error-${tempId}`,
+          senderId: userId,
+          senderNickname: 'System',
+          text: `❌ Failed to upload image: ${result.error}. Please try again or use a different image.`,
+          timestamp: Date.now(),
+          type: 'text',
+          isTemp: true
+        }]);
+        
+        // Remove error message after 5 seconds
+        setTimeout(() => {
+          setMessages(prev => prev.filter(m => m.id !== `error-${tempId}`));
+        }, 5000);
+      }
+    } catch (error) {
+      // Remove temp message
+      setMessages(prev => prev.filter(m => m.id !== `temp-${tempId}`));
+      
+      // Show error
+      console.error('Image upload error:', error);
+      setMessages(prev => [...prev, {
+        id: `error-${tempId}`,
         senderId: userId,
-        senderNickname: userProfile.nickname,
-        imageUrl: result.url,
+        senderNickname: 'System',
+        text: '❌ Failed to upload image. Please try again.',
         timestamp: Date.now(),
-        type: 'image'
-      });
-    } else {
-      alert('Failed to upload image: ' + result.error);
+        type: 'text',
+        isTemp: true
+      }]);
+      
+      // Remove error message after 5 seconds
+      setTimeout(() => {
+        setMessages(prev => prev.filter(m => m.id !== `error-${tempId}`));
+      }, 5000);
     }
   };
 
@@ -387,45 +428,78 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
 
   if (isSearching) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-slate-900">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-slate-900 relative overflow-hidden">
+        {/* Animated background circles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(5)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full bg-gradient-to-br from-sky-500/10 to-purple-500/10"
+              style={{
+                width: `${Math.random() * 300 + 100}px`,
+                height: `${Math.random() * 300 + 100}px`,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                x: [0, Math.random() * 100 - 50],
+                y: [0, Math.random() * 100 - 50],
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{
+                duration: Math.random() * 5 + 5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          ))}
+        </div>
+
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center max-w-md w-full bg-slate-800 rounded-2xl p-8 shadow-2xl"
+          className="text-center max-w-md w-full bg-slate-800/80 backdrop-blur-lg rounded-2xl p-8 shadow-2xl relative z-10 border border-slate-700/50"
         >
           <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="text-7xl mb-6"
+            animate={{ 
+              rotate: 360,
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ 
+              rotate: { duration: 2, repeat: Infinity, ease: "linear" },
+              scale: { duration: 1, repeat: Infinity, ease: "easeInOut" }
+            }}
+            className="text-7xl mb-6 inline-block"
           >
-            👻
+            <FaUserSecret className="text-sky-400" />
           </motion.div>
-          <h2 className="text-2xl font-bold mb-3 text-ghost-accent">Finding your match...</h2>
+          <h2 className="text-2xl font-bold mb-3 text-transparent bg-gradient-to-r from-sky-400 to-purple-500 bg-clip-text">Finding your match...</h2>
           <p className="text-gray-400 mb-6 text-sm">
-            {searchAttempts === 0 ? 'Initializing matchmaking...' : searchAttempts < 5 ? 'Looking for someone with similar interests...' : `Still searching... (${searchAttempts}s)`}
+            {searchAttempts === 0 ? '🔍 Initializing matchmaking...' : searchAttempts < 5 ? '✨ Looking for someone with similar interests...' : `⏳ Still searching... (${searchAttempts}s)`}
           </p>
           <div className="flex gap-2 justify-center mb-8">
-            {[0, 1, 2].map((i) => (
+            {[0, 1, 2, 3, 4].map((i) => (
               <motion.div
                 key={i}
                 animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
                 transition={{
-                  duration: 1,
+                  duration: 1.5,
                   repeat: Infinity,
-                  delay: i * 0.2
+                  delay: i * 0.15
                 }}
-                className="w-3 h-3 bg-gradient-to-br from-sky-400 to-sky-600 rounded-full shadow-lg"
+                className="w-2 h-2 bg-gradient-to-br from-sky-400 to-sky-600 rounded-full shadow-lg"
               />
             ))}
           </div>
           <button
             onClick={onLeaveRoom}
-            className="btn-secondary w-full py-3"
+            className="btn-secondary w-full py-3 flex items-center justify-center gap-2"
           >
-            Cancel Search
+            <IoClose /> Cancel Search
           </button>
-          <p className="text-xs text-gray-600 mt-4">
-            Tip: Add interest tags for better matches!
+          <p className="text-xs text-gray-600 mt-4 flex items-center justify-center gap-1">
+            <HiSparkles className="text-sky-400" /> Tip: Add interest tags for better matches!
           </p>
         </motion.div>
       </div>
@@ -434,14 +508,17 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-900">
-      {/* Header - Telegram style */}
+      {/* Header - Modern style */}
       <div className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between shadow-lg">
         <div className="flex items-center gap-3 flex-1 min-w-0">
           {/* Avatar circle */}
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-md ${
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-md relative ${
             partnerConnected ? 'bg-gradient-to-br from-sky-500 to-sky-600' : 'bg-slate-600'
           }`}>
-            👻
+            <FaUserSecret />
+            {partnerConnected && (
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-slate-800 rounded-full"></span>
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -457,8 +534,8 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
                 </div>
               </div>
             ) : (
-              <span className={`text-xs ${partnerConnected ? 'text-green-400' : 'text-gray-500'}`}>
-                {partnerConnected ? 'online' : 'offline'}
+              <span className={`text-xs flex items-center gap-1 ${partnerConnected ? 'text-green-400' : 'text-gray-500'}`}>
+                {partnerConnected ? <><HiStatusOnline /> online</> : <><HiStatusOffline /> offline</>}
               </span>
             )}
           </div>
@@ -466,17 +543,17 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
         <div className="flex gap-2">
           <button
             onClick={handleSkip}
-            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all text-sm font-medium"
+            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all text-sm font-medium flex items-center gap-1.5"
             title="Skip to next person"
           >
-            ⏭️ Next
+            <MdSkipNext className="text-lg" /> Next
           </button>
           <button
             onClick={onLeaveRoom}
-            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg transition-all text-sm font-medium"
+            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg transition-all text-sm font-medium flex items-center gap-1.5"
             title="Leave chat"
           >
-            ❌ Leave
+            <IoClose className="text-lg" /> Leave
           </button>
         </div>
       </div>

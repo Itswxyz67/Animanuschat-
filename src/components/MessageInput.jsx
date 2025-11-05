@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react';
 import EmojiPicker from 'emoji-picker-react';
+import { IoSend, IoHappy, IoImage } from 'react-icons/io5';
+import { BiLoaderAlt } from 'react-icons/bi';
 
 function MessageInput({ onSendMessage, onSendImage, onTyping }) {
   const [message, setMessage] = useState('');
@@ -94,10 +96,10 @@ function MessageInput({ onSendMessage, onSendImage, onTyping }) {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
-          className="p-2.5 rounded-full bg-slate-700 hover:bg-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+          className="p-2.5 rounded-full bg-slate-700 hover:bg-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xl"
           title="Upload image"
         >
-          {isUploading ? '⏳' : '📎'}
+          {isUploading ? <BiLoaderAlt className="animate-spin" /> : <IoImage />}
         </button>
         <input
           ref={fileInputRef}
@@ -122,10 +124,10 @@ function MessageInput({ onSendMessage, onSendImage, onTyping }) {
           <button
             type="button"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-xl hover:scale-110 transition-transform"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-xl hover:scale-110 transition-transform text-yellow-400"
             title="Add emoji"
           >
-            😊
+            <IoHappy />
           </button>
         </div>
 
@@ -133,12 +135,10 @@ function MessageInput({ onSendMessage, onSendImage, onTyping }) {
         <button
           type="submit"
           disabled={!message.trim() || isUploading}
-          className="p-2.5 rounded-full bg-gradient-to-br from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:from-slate-600 disabled:to-slate-600 font-semibold shadow-lg"
+          className="p-3 rounded-full bg-gradient-to-br from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:from-slate-600 disabled:to-slate-600 font-semibold shadow-lg"
           title="Send message"
         >
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-          </svg>
+          <IoSend className="w-5 h-5" />
         </button>
       </form>
 

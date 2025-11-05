@@ -3,6 +3,10 @@ import { initializeFirebase } from './services/firebase';
 import LandingPage from './components/LandingPage';
 import ChatRoom from './components/ChatRoom';
 import { getNickname } from './utils/nickname';
+import { IoSettingsSharp, IoClose, IoMoon, IoSunny, IoWater, IoLeaf } from 'react-icons/io5';
+import { RiChatSmile3Fill } from 'react-icons/ri';
+import { BsLightningChargeFill } from 'react-icons/bs';
+import { GiNightSky, GiSunset, GiVampireDracula } from 'react-icons/gi';
 
 const THEMES = ['dark', 'light', 'midnight', 'sunset', 'ocean', 'forest', 'neon', 'dracula'];
 
@@ -21,6 +25,8 @@ function App() {
       setFirebaseReady(true);
     } else {
       console.error('Failed to initialize Firebase. Please check your configuration.');
+      // For demo purposes, continue anyway after 1 second
+      setTimeout(() => setFirebaseReady(true), 1000);
     }
 
     // Load theme preference
@@ -46,18 +52,18 @@ function App() {
     setShowSettings(!showSettings);
   };
 
-  const getThemeEmoji = (themeName) => {
-    const emojiMap = {
-      dark: '🌙',
-      light: '☀️',
-      midnight: '🌃',
-      sunset: '🌅',
-      ocean: '🌊',
-      forest: '🌲',
-      neon: '⚡',
-      dracula: '🧛'
+  const getThemeIcon = (themeName) => {
+    const iconMap = {
+      dark: <IoMoon />,
+      light: <IoSunny />,
+      midnight: <GiNightSky />,
+      sunset: <GiSunset />,
+      ocean: <IoWater />,
+      forest: <IoLeaf />,
+      neon: <BsLightningChargeFill />,
+      dracula: <GiVampireDracula />
     };
-    return emojiMap[themeName] || '🎨';
+    return iconMap[themeName] || <RiChatSmile3Fill />;
   };
 
   const handleStartChat = (profile) => {
@@ -102,10 +108,10 @@ function App() {
       <div className="fixed top-4 right-4 z-50">
         <button
           onClick={toggleSettings}
-          className="p-3 rounded-xl bg-slate-800/80 backdrop-blur-sm hover:bg-slate-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform"
+          className="p-3 rounded-xl bg-slate-800/80 backdrop-blur-sm hover:bg-slate-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform text-xl"
           aria-label="Open settings"
         >
-          ⚙️
+          <IoSettingsSharp className="animate-spin-slow" />
         </button>
       </div>
 
@@ -120,32 +126,36 @@ function App() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-sky-600 bg-clip-text text-transparent">⚙️ Settings</h2>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-sky-600 bg-clip-text text-transparent flex items-center gap-2">
+                <IoSettingsSharp /> Settings
+              </h2>
               <button
                 onClick={toggleSettings}
-                className="text-gray-400 hover:text-white transition-colors text-2xl"
+                className="text-gray-400 hover:text-white transition-colors text-2xl hover:rotate-90 transform duration-300"
                 aria-label="Close settings"
               >
-                ✕
+                <IoClose />
               </button>
             </div>
             
             <div className="space-y-6">
               {/* Theme Selection */}
               <div>
-                <h3 className="text-lg font-semibold mb-3 text-gray-200">🎨 Theme</h3>
+                <h3 className="text-lg font-semibold mb-3 text-gray-200 flex items-center gap-2">
+                  <RiChatSmile3Fill /> Theme
+                </h3>
                 <div className="grid grid-cols-2 gap-3">
                   {THEMES.map((t) => (
                     <button
                       key={t}
                       onClick={() => changeTheme(t)}
-                      className={`px-4 py-3 rounded-xl capitalize font-medium transition-all transform hover:scale-105 ${
+                      className={`px-4 py-3 rounded-xl capitalize font-medium transition-all transform hover:scale-105 flex items-center justify-center gap-2 ${
                         theme === t
                           ? 'bg-gradient-to-br from-sky-500 to-sky-600 text-white shadow-lg shadow-sky-500/30'
                           : 'bg-slate-700 hover:bg-slate-600 text-gray-300'
                       }`}
                     >
-                      {getThemeEmoji(t)} {t}
+                      <span className="text-lg">{getThemeIcon(t)}</span> {t}
                     </button>
                   ))}
                 </div>
