@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { detectEmbedType } from '../utils/embedParser';
 
 function MessageList({ messages, currentUserId }) {
   const messagesEndRef = useRef(null);
@@ -20,12 +21,65 @@ function MessageList({ messages, currentUserId }) {
     });
   };
 
+  const renderEmbed = (embedData) => {
+    if (!embedData) return null;
+
+    switch (embedData.type) {
+      case 'youtube':
+        return (
+          <div className="rounded-xl overflow-hidden">
+            <iframe
+              width="100%"
+              height="200"
+              src={`https://www.youtube.com/embed/${embedData.id}`}
+              title="YouTube video"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="max-w-full"
+            />
+          </div>
+        );
+      
+      case 'twitter':
+        return (
+          <div className="rounded-xl overflow-hidden bg-slate-600 p-3">
+            <a 
+              href={embedData.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-sky-400 hover:underline text-sm"
+            >
+              View Tweet on Twitter/X →
+            </a>
+          </div>
+        );
+      
+      case 'image':
+        return (
+          <img
+            src={embedData.url}
+            alt="Linked image"
+            className="rounded-xl max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+            onClick={() => window.open(embedData.url, '_blank')}
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        );
+      
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-slate-900">
       {messages.length === 0 && (
         <div className="text-center text-gray-500 mt-8">
-          <p className="text-4xl mb-2">👋</p>
-          <p>Say hi to start the conversation!</p>
+          <p className="text-4xl mb-3">👋</p>
+          <p className="text-base">Say hi to start the conversation!</p>
+          <p className="text-xs text-gray-600 mt-2">Your messages are end-to-end temporary</p>
         </div>
       )}
 
@@ -36,15 +90,16 @@ function MessageList({ messages, currentUserId }) {
           return (
             <motion.div
               key={message.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className={`flex ${isSent ? 'justify-end' : 'justify-start'}`}
+              transition={{ duration: 0.2 }}
+              className={`flex ${isSent ? 'justify-end' : 'justify-start'} mb-1`}
             >
-              <div className={`max-w-[80%] md:max-w-[60%]`}>
-                {/* Nickname */}
+              <div className={`max-w-[75%] md:max-w-[65%]`}>
+                {/* Nickname - only for received messages */}
                 {!isSent && (
-                  <div className="text-xs text-gray-400 mb-1 ml-2">
+                  <div className="text-xs font-medium text-sky-400 mb-1 ml-3">
                     {message.senderNickname}
                   </div>
                 )}
@@ -55,15 +110,26 @@ function MessageList({ messages, currentUserId }) {
                     isSent ? 'message-sent' : 'message-received'
                   } ${message.isTemp ? 'opacity-50' : ''}`}
                 >
-                  {message.type === 'text' && (
-                    <p className="whitespace-pre-wrap break-words">{message.text}</p>
-                  )}
+                  {message.type === 'text' && (() => {
+                    const embedData = detectEmbedType(message.text);
+                    
+                    return (
+                      <>
+                        <p className="whitespace-pre-wrap break-words text-sm leading-relaxed mb-2">{message.text}</p>
+                        {embedData && (
+                          <div className="mt-2">
+                            {renderEmbed(embedData)}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
 
                   {message.type === 'image' && message.imageUrl && (
                     <img
                       src={message.imageUrl}
                       alt="Shared image"
-                      className="rounded-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                      className="rounded-xl max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => window.open(message.imageUrl, '_blank')}
                     />
                   )}
@@ -71,7 +137,7 @@ function MessageList({ messages, currentUserId }) {
                   {/* Timestamp */}
                   <div
                     className={`text-xs mt-1 ${
-                      isSent ? 'text-sky-100' : 'text-gray-400'
+                      isSent ? 'text-sky-100 opacity-80' : 'text-gray-500'
                     }`}
                   >
                     {formatTime(message.timestamp)}

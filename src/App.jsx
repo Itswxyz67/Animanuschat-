@@ -4,11 +4,14 @@ import LandingPage from './components/LandingPage';
 import ChatRoom from './components/ChatRoom';
 import { getNickname } from './utils/nickname';
 
+const THEMES = ['dark', 'light', 'midnight', 'sunset'];
+
 function App() {
   const [currentScreen, setCurrentScreen] = useState('landing'); // 'landing', 'searching', 'chatting'
   const [userProfile, setUserProfile] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [theme, setTheme] = useState('dark');
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
   const [firebaseReady, setFirebaseReady] = useState(false);
 
   useEffect(() => {
@@ -23,14 +26,25 @@ function App() {
     // Load theme preference
     const savedTheme = localStorage.getItem('ghostlink_theme') || 'dark';
     setTheme(savedTheme);
-    document.documentElement.classList.toggle('light', savedTheme === 'light');
+    applyTheme(savedTheme);
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
+  const applyTheme = (themeName) => {
+    // Remove all theme classes
+    THEMES.forEach(t => document.documentElement.classList.remove(t));
+    // Add the selected theme class
+    document.documentElement.classList.add(themeName);
+  };
+
+  const changeTheme = (newTheme) => {
     setTheme(newTheme);
     localStorage.setItem('ghostlink_theme', newTheme);
-    document.documentElement.classList.toggle('light', newTheme === 'light');
+    applyTheme(newTheme);
+    setShowThemeSelector(false);
+  };
+
+  const toggleTheme = () => {
+    setShowThemeSelector(!showThemeSelector);
   };
 
   const handleStartChat = (profile) => {
@@ -71,14 +85,32 @@ function App() {
 
   return (
     <div className="min-h-screen">
-      {/* Theme Toggle - Always visible */}
-      <button
-        onClick={toggleTheme}
-        className="fixed top-4 right-4 z-50 p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
-        aria-label="Toggle theme"
-      >
-        {theme === 'dark' ? '🌙' : '☀️'}
-      </button>
+      {/* Theme Selector - Always visible */}
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
+          aria-label="Change theme"
+        >
+          {theme === 'dark' ? '🌙' : theme === 'light' ? '☀️' : theme === 'midnight' ? '🌃' : '🌅'}
+        </button>
+        
+        {showThemeSelector && (
+          <div className="absolute top-12 right-0 bg-slate-800 rounded-lg shadow-xl p-2 min-w-[150px]">
+            {THEMES.map((t) => (
+              <button
+                key={t}
+                onClick={() => changeTheme(t)}
+                className={`w-full text-left px-3 py-2 rounded hover:bg-slate-700 transition-colors capitalize ${
+                  theme === t ? 'bg-slate-700 text-sky-400' : ''
+                }`}
+              >
+                {t === 'dark' ? '🌙 Dark' : t === 'light' ? '☀️ Light' : t === 'midnight' ? '🌃 Midnight' : '🌅 Sunset'}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       {currentScreen === 'landing' && (
         <LandingPage onStartChat={handleStartChat} />

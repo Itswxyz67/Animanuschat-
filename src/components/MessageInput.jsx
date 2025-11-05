@@ -75,7 +75,7 @@ function MessageInput({ onSendMessage, onSendImage, onTyping }) {
   };
 
   return (
-    <div className="bg-slate-800 border-t border-slate-700 p-4">
+    <div className="bg-slate-800 border-t border-slate-700 px-4 py-3 shadow-lg">
       {/* Emoji Picker */}
       {showEmojiPicker && (
         <div className="absolute bottom-20 right-4 z-50">
@@ -94,10 +94,10 @@ function MessageInput({ onSendMessage, onSendImage, onTyping }) {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
-          className="p-3 rounded-lg bg-slate-700 hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-2.5 rounded-full bg-slate-700 hover:bg-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-lg"
           title="Upload image"
         >
-          {isUploading ? '⏳' : '📷'}
+          {isUploading ? '⏳' : '📎'}
         </button>
         <input
           ref={fileInputRef}
@@ -114,15 +114,15 @@ function MessageInput({ onSendMessage, onSendImage, onTyping }) {
             value={message}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            placeholder="Type a message..."
-            className="input-field resize-none min-h-[44px] max-h-32 pr-10"
+            placeholder="Message..."
+            className="w-full px-4 py-2.5 bg-slate-700 border-0 rounded-3xl focus:outline-none focus:ring-2 focus:ring-ghost-accent/30 text-ghost-text resize-none min-h-[44px] max-h-32 pr-12 transition-all"
             rows={1}
             disabled={isUploading}
           />
           <button
             type="button"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-xl hover:scale-110 transition-transform"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-xl hover:scale-110 transition-transform"
             title="Add emoji"
           >
             😊
@@ -133,16 +133,18 @@ function MessageInput({ onSendMessage, onSendImage, onTyping }) {
         <button
           type="submit"
           disabled={!message.trim() || isUploading}
-          className="p-3 rounded-lg bg-ghost-accent hover:bg-sky-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+          className="p-2.5 rounded-full bg-gradient-to-br from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:from-slate-600 disabled:to-slate-600 font-semibold shadow-lg"
           title="Send message"
         >
-          📤
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+          </svg>
         </button>
       </form>
 
-      {/* Character counter (optional) */}
-      {message.length > 0 && (
-        <div className="text-xs text-gray-500 mt-1 text-right">
+      {/* Character counter - only show when getting close to limit */}
+      {message.length > 800 && (
+        <div className={`text-xs mt-1.5 text-right ${message.length > 950 ? 'text-red-400' : 'text-gray-500'}`}>
           {message.length} / 1000
         </div>
       )}
