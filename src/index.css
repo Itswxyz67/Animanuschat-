@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-ghost-dark text-ghost-text;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-ghost-accent text-white rounded-lg hover:bg-sky-500 transition-colors font-medium;
+  }
+  
+  .btn-secondary {
+    @apply px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors font-medium;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:border-ghost-accent text-ghost-text;
+  }
+  
+  .message-bubble {
+    @apply max-w-[70%] px-4 py-2 rounded-2xl break-words;
+  }
+  
+  .message-sent {
+    @apply bg-ghost-accent text-white ml-auto rounded-br-sm;
+  }
+  
+  .message-received {
+    @apply bg-slate-700 text-ghost-text mr-auto rounded-bl-sm;
+  }
+}
+
+/* Dark theme (default) */
+:root {
+  color-scheme: dark;
+}
+
+/* Light theme */
+.light {
+  color-scheme: light;
+}
+
+.light body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+.light .input-field {
+  @apply bg-white border-gray-300 text-gray-900;
+}
+
+.light .message-received {
+  @apply bg-gray-200 text-gray-900;
+}
+
+.light .btn-secondary {
+  @apply bg-gray-300 text-gray-900 hover:bg-gray-400;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700 rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-600;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
