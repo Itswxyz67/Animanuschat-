@@ -25,8 +25,10 @@ function App() {
       setFirebaseReady(true);
     } else {
       console.error('Failed to initialize Firebase. Please check your configuration.');
-      // For demo purposes, continue anyway after 1 second
-      setTimeout(() => setFirebaseReady(true), 1000);
+      // For demo/development purposes only - allows UI testing without Firebase
+      if (import.meta.env.DEV) {
+        setTimeout(() => setFirebaseReady(true), 1000);
+      }
     }
 
     // Load theme preference

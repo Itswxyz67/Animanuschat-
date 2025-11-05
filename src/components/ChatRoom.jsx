@@ -23,6 +23,7 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
   const db = getDb();
   const typingTimeoutRef = useRef(null);
   const matchCheckIntervalRef = useRef(null);
+  const errorTimeoutRefs = useRef([]);
 
   const joinWaitingList = useCallback(async () => {
     const waitingRef = ref(db, `waitingList/${userId}`);
@@ -312,6 +313,9 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
       if (roomId) {
         leaveRoom();
       }
+      // Clear all error message timeouts on unmount
+      errorTimeoutRefs.current.forEach(timeoutId => clearTimeout(timeoutId));
+      errorTimeoutRefs.current = [];
     };
   }, [roomId, isSearching, listenToRoom, setupDisconnectHandler, leaveRoom]);
 
@@ -381,9 +385,10 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
         }]);
         
         // Remove error message after 5 seconds
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           setMessages(prev => prev.filter(m => m.id !== `error-${tempId}`));
         }, 5000);
+        errorTimeoutRefs.current.push(timeoutId);
       }
     } catch (error) {
       // Remove temp message
@@ -402,9 +407,10 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
       }]);
       
       // Remove error message after 5 seconds
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         setMessages(prev => prev.filter(m => m.id !== `error-${tempId}`));
       }, 5000);
+      errorTimeoutRefs.current.push(timeoutId);
     }
   };
 
