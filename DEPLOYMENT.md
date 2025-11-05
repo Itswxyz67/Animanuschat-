@@ -37,42 +37,22 @@ This guide will help you deploy GhostLink to production.
 
 ### 1.4 Configure Firebase Security Rules
 
-1. Go to Realtime Database → Rules tab
-2. Replace the default rules with rules from `firebase.rules.json`
-3. Or use these production rules:
+**📖 For detailed instructions, see: [FIREBASE-RULES-GUIDE.md](FIREBASE-RULES-GUIDE.md)**
 
-```json
-{
-  "rules": {
-    "waitingList": {
-      ".read": true,
-      "$userId": {
-        ".write": true,
-        ".validate": "newData.hasChildren(['userId', 'nickname', 'gender', 'timestamp'])"
-      }
-    },
-    "rooms": {
-      ".read": true,
-      "$roomId": {
-        "users": {
-          ".write": true
-        },
-        "messages": {
-          ".write": true,
-          "$messageId": {
-            ".validate": "newData.hasChildren(['senderId', 'senderNickname', 'timestamp'])"
-          }
-        },
-        "typing": {
-          ".write": true
-        }
-      }
-    }
-  }
-}
+#### Quick Setup Options:
+
+**Option A: Using Firebase CLI (Recommended)**
+```bash
+firebase deploy --only database
 ```
 
+**Option B: Manual Setup via Console**
+1. Go to Realtime Database → Rules tab
+2. Copy the entire content from `firebase.rules.json`
+3. Paste into the Firebase Console rules editor
 4. Click "Publish"
+
+⚠️ **Important**: Copy the rules from `firebase.rules.json` or `database.rules.json` files, NOT the database structure documentation. See [FIREBASE-RULES-GUIDE.md](FIREBASE-RULES-GUIDE.md) for troubleshooting common errors.
 
 ## Step 2: Environment Configuration
 
