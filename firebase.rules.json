@@ -1,0 +1,23 @@
+{
+  "rules": {
+    "waitingList": {
+      ".read": true,
+      ".write": true,
+      "$userId": {
+        ".validate": "newData.hasChildren(['userId', 'nickname', 'gender', 'timestamp'])"
+      }
+    },
+    "rooms": {
+      ".read": true,
+      ".write": true,
+      "$roomId": {
+        ".validate": "newData.hasChildren(['users', 'createdAt'])",
+        "messages": {
+          "$messageId": {
+            ".validate": "newData.hasChildren(['senderId', 'senderNickname', 'timestamp']) && (newData.hasChild('text') || newData.hasChild('imageUrl'))"
+          }
+        }
+      }
+    }
+  }
+}
