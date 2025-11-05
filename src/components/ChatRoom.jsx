@@ -37,6 +37,7 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
 
   const createRoom = useCallback(async (partner) => {
     // Use deterministic room ID based on sorted user IDs to prevent duplicates
+    // Safe to use underscore as delimiter since UUIDs use hyphens, not underscores
     const sortedIds = [userId, partner.userId].sort();
     const newRoomId = `${sortedIds[0]}_${sortedIds[1]}`;
     const roomRef = ref(db, `rooms/${newRoomId}`);
