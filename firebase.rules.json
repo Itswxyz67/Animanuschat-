@@ -18,20 +18,22 @@
           ".validate": "newData.isString() && (newData.val() === 'male' || newData.val() === 'female' || newData.val() === 'any')"
         },
         "tags": {
-          ".validate": "newData.hasChildren()"
+          ".validate": "true"
         },
         "nsfwEnabled": {
           ".validate": "newData.isBoolean()"
         },
         "timestamp": {
           ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
         }
       }
     },
     "rooms": {
       ".read": true,
       "$roomId": {
-        ".validate": "newData.hasChildren(['users', 'createdAt'])",
         "users": {
           ".write": true,
           "$userId": {
@@ -44,6 +46,9 @@
             },
             "joinedAt": {
               ".validate": "newData.isNumber()"
+            },
+            "$other": {
+              ".validate": false
             }
           }
         },
@@ -68,6 +73,9 @@
             },
             "type": {
               ".validate": "newData.isString() && (newData.val() === 'text' || newData.val() === 'image')"
+            },
+            "$other": {
+              ".validate": false
             }
           }
         },
@@ -82,6 +90,9 @@
         },
         "nsfwEnabled": {
           ".validate": "newData.isBoolean()"
+        },
+        "$other": {
+          ".validate": false
         }
       }
     }
