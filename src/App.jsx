@@ -106,17 +106,6 @@ function App() {
 
   return (
     <div className="min-h-screen">
-      {/* Settings Button - Always visible */}
-      <div className="fixed top-4 right-4 z-50">
-        <button
-          onClick={toggleSettings}
-          className="p-3 rounded-xl bg-slate-800/80 backdrop-blur-sm hover:bg-slate-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform text-xl"
-          aria-label="Open settings"
-        >
-          <IoSettingsSharp className="animate-spin-slow" />
-        </button>
-      </div>
-
       {/* Settings Panel */}
       {showSettings && (
         <div 
@@ -195,7 +184,7 @@ function App() {
       )}
 
       {currentScreen === 'landing' && (
-        <LandingPage onStartChat={handleStartChat} />
+        <LandingPage onStartChat={handleStartChat} onOpenSettings={toggleSettings} />
       )}
 
       {(currentScreen === 'searching' || currentScreen === 'chatting') && (
@@ -206,6 +195,7 @@ function App() {
           onLeaveRoom={handleLeaveRoom}
           onSkip={handleSkip}
           isSearching={currentScreen === 'searching'}
+          onOpenSettings={toggleSettings}
         />
       )}
     </div>

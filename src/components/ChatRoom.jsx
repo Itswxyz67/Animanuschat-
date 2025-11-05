@@ -6,13 +6,13 @@ import { uploadImage } from '../services/imageUpload';
 import { canMatch, getMatchScore, filterNSFW } from '../utils/filters';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
-import { IoClose } from 'react-icons/io5';
+import { IoClose, IoSettingsSharp } from 'react-icons/io5';
 import { MdSkipNext } from 'react-icons/md';
 import { FaUserSecret } from 'react-icons/fa';
 import { HiStatusOnline, HiStatusOffline } from 'react-icons/hi';
 import { HiSparkles } from 'react-icons/hi2';
 
-function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSearching }) {
+function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSearching, onOpenSettings }) {
   const [messages, setMessages] = useState([]);
   const [partnerTyping, setPartnerTyping] = useState(false);
   const [partnerConnected, setPartnerConnected] = useState(false);
@@ -547,6 +547,13 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
           </div>
         </div>
         <div className="flex gap-2">
+          <button
+            onClick={onOpenSettings}
+            className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all text-base"
+            title="Settings"
+          >
+            <IoSettingsSharp />
+          </button>
           <button
             onClick={handleSkip}
             className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all text-sm font-medium flex items-center gap-1.5"

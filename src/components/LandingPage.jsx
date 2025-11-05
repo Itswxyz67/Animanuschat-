@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { IoLockClosed, IoShieldCheckmark, IoChatbubbles } from 'react-icons/io5';
+import { IoLockClosed, IoShieldCheckmark, IoChatbubbles, IoSettingsSharp } from 'react-icons/io5';
 import { FaRocket, FaUserSecret } from 'react-icons/fa';
 import { HiSparkles } from 'react-icons/hi2';
 
-function LandingPage({ onStartChat }) {
+function LandingPage({ onStartChat, onOpenSettings }) {
   // Load saved preferences from localStorage
   const [gender, setGender] = useState(() => localStorage.getItem('ghostlink_gender') || '');
   const [genderPreference, setGenderPreference] = useState(() => localStorage.getItem('ghostlink_genderPreference') || 'any');
@@ -127,30 +127,41 @@ function LandingPage({ onStartChat }) {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-lg w-full"
       >
+        {/* Settings Button - Top Right */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={onOpenSettings}
+            className="p-2.5 rounded-xl bg-slate-800/80 backdrop-blur-sm hover:bg-slate-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform text-lg"
+            aria-label="Open settings"
+          >
+            <IoSettingsSharp />
+          </button>
+        </div>
+
         {/* Logo/Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            className="text-7xl mb-4 inline-block"
+            className="text-5xl mb-3 inline-block"
           >
             <IoChatbubbles className="text-sky-500" />
           </motion.div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-sky-400 via-purple-500 to-sky-600 bg-clip-text text-transparent mb-3 animate-gradient">GhostLink</h1>
-          <p className="text-gray-300 text-lg flex items-center justify-center gap-2">
-            <HiSparkles className="text-sky-400" />
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-sky-400 via-purple-500 to-sky-600 bg-clip-text text-transparent mb-2 animate-gradient">GhostLink</h1>
+          <p className="text-gray-300 text-base flex items-center justify-center gap-2 mb-3">
+            <HiSparkles className="text-sky-400 text-sm" />
             Anonymous 1-on-1 Random Chat
-            <HiSparkles className="text-sky-400" />
+            <HiSparkles className="text-sky-400 text-sm" />
           </p>
-          <div className="flex items-center justify-center gap-3 text-sm text-gray-400 mt-4">
-            <span className="flex items-center gap-1 bg-slate-800/50 px-3 py-1.5 rounded-full">
+          <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+            <span className="flex items-center gap-1 bg-slate-800/50 px-2.5 py-1 rounded-full">
               <IoLockClosed className="text-sky-400" /> No login
             </span>
-            <span className="flex items-center gap-1 bg-slate-800/50 px-3 py-1.5 rounded-full">
+            <span className="flex items-center gap-1 bg-slate-800/50 px-2.5 py-1 rounded-full">
               <FaUserSecret className="text-purple-400" /> Anonymous
             </span>
-            <span className="flex items-center gap-1 bg-slate-800/50 px-3 py-1.5 rounded-full">
+            <span className="flex items-center gap-1 bg-slate-800/50 px-2.5 py-1 rounded-full">
               <IoShieldCheckmark className="text-green-400" /> Free
             </span>
           </div>
@@ -162,11 +173,11 @@ function LandingPage({ onStartChat }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
           onSubmit={handleSubmit}
-          className="bg-slate-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-slate-700/50 space-y-6"
+          className="bg-slate-800/90 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-slate-700/50 space-y-4"
         >
           {/* Gender Selection */}
           <div>
-            <label className="block text-sm font-semibold mb-3 text-gray-200">Your Gender</label>
+            <label className="block text-sm font-semibold mb-2 text-gray-200">Your Gender</label>
             <div className="grid grid-cols-3 gap-3">
               {['male', 'female', 'other'].map((g) => (
                 <button
@@ -187,7 +198,7 @@ function LandingPage({ onStartChat }) {
 
           {/* Gender Preference */}
           <div>
-            <label className="block text-sm font-semibold mb-3 text-gray-200">Looking for</label>
+            <label className="block text-sm font-semibold mb-2 text-gray-200">Looking for</label>
             <select
               value={genderPreference}
               onChange={(e) => setGenderPreference(e.target.value)}
@@ -202,7 +213,7 @@ function LandingPage({ onStartChat }) {
 
           {/* Interest Tags */}
           <div>
-            <label className="block text-sm font-semibold mb-3 text-gray-200">
+            <label className="block text-sm font-semibold mb-2 text-gray-200">
               Interests <span className="text-gray-500 text-xs font-normal">(optional)</span>
             </label>
             <input
@@ -240,18 +251,21 @@ function LandingPage({ onStartChat }) {
           {/* Start Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white text-lg py-4 rounded-xl font-bold transition-all shadow-lg shadow-sky-500/30 hover:shadow-xl hover:shadow-sky-500/40 transform hover:scale-[1.02] flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white text-base py-3 rounded-xl font-bold transition-all shadow-lg shadow-sky-500/30 hover:shadow-xl hover:shadow-sky-500/40 transform hover:scale-[1.02] flex items-center justify-center gap-2"
           >
-            <FaRocket className="text-xl" /> Start Chatting
+            <FaRocket /> Start Chatting
           </button>
 
           {/* Privacy Notice */}
-          <div className="text-center">
+          <div className="text-center space-y-1">
             <p className="text-xs text-gray-500 leading-relaxed flex items-center justify-center gap-1">
               <IoLockClosed className="text-sky-400" /> Your privacy is protected. Messages are temporary and deleted when you disconnect.
             </p>
-            <p className="text-xs text-gray-600 mt-1 flex items-center justify-center gap-1">
+            <p className="text-xs text-gray-600 flex items-center justify-center gap-1">
               <IoShieldCheckmark className="text-green-500" /> We don&apos;t collect any personal data.
+            </p>
+            <p className="text-xs text-gray-600 flex items-center justify-center gap-1">
+              💡 Use ||text|| for spoilers that reveal on click
             </p>
           </div>
         </motion.form>
