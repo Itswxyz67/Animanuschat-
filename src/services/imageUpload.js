@@ -19,34 +19,49 @@ export const uploadImage = async (file) => {
     // Remove data URL prefix
     const base64Data = base64.split(',')[1];
     
-    // Create FormData
+    // Create FormData - use proper multipart/form-data format
     const formData = new FormData();
     formData.append('key', FREEIMAGE_API_KEY);
-    formData.append('action', 'upload');
     formData.append('source', base64Data);
     formData.append('format', 'json');
     
-    // Upload to FreeImage.host
+    // Upload to FreeImage.host using POST (required for base64)
     const response = await axios.post(UPLOAD_URL, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      timeout: 30000, // 30 second timeout
     });
     
-    if (response.data && response.data.image && response.data.image.display_url) {
+    // Check for successful response
+    if (response.data && response.data.status_code === 200 && response.data.image) {
       return {
         success: true,
-        url: response.data.image.display_url,
-        thumb: response.data.image.thumb?.url || response.data.image.display_url
+        url: response.data.image.url || response.data.image.display_url,
+        thumb: response.data.image.thumb?.url || response.data.image.url
       };
+    } else if (response.data && response.data.error) {
+      throw new Error(response.data.error.message || 'Upload failed');
     } else {
       throw new Error('Invalid response from image host');
     }
   } catch (error) {
     console.error('Image upload error:', error);
+    let errorMessage = 'Failed to upload image';
+    
+    if (error.response) {
+      // Server responded with error
+      errorMessage = error.response.data?.error?.message || 'Server error';
+    } else if (error.request) {
+      // Network error
+      errorMessage = 'Network error. Please check your connection.';
+    } else {
+      errorMessage = error.message || errorMessage;
+    }
+    
     return {
       success: false,
-      error: error.message || 'Failed to upload image'
+      error: errorMessage
     };
   }
 };

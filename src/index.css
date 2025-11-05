@@ -35,7 +35,8 @@
 }
 
 /* Dark theme (default) */
-:root {
+:root,
+.dark {
   color-scheme: dark;
 }
 
@@ -58,6 +59,56 @@
 
 .light .btn-secondary {
   @apply bg-gray-300 text-gray-900 hover:bg-gray-400;
+}
+
+/* Midnight theme - darker blues */
+.midnight {
+  color-scheme: dark;
+}
+
+.midnight body {
+  @apply bg-blue-950 text-blue-50;
+}
+
+.midnight .bg-slate-800 {
+  @apply bg-blue-900;
+}
+
+.midnight .bg-slate-900 {
+  @apply bg-blue-950;
+}
+
+.midnight .bg-slate-700 {
+  @apply bg-blue-800;
+}
+
+/* Sunset theme - warm colors */
+.sunset {
+  color-scheme: dark;
+}
+
+.sunset body {
+  @apply bg-orange-950 text-orange-50;
+}
+
+.sunset .bg-slate-800 {
+  @apply bg-orange-900;
+}
+
+.sunset .bg-slate-900 {
+  @apply bg-orange-950;
+}
+
+.sunset .bg-slate-700 {
+  @apply bg-orange-800;
+}
+
+.sunset .message-sent {
+  @apply bg-gradient-to-br from-orange-500 to-orange-600;
+}
+
+.sunset .bg-ghost-accent {
+  @apply bg-orange-500;
 }
 
 /* Scrollbar styling */

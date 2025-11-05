@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 function LandingPage({ onStartChat }) {
-  const [gender, setGender] = useState('');
-  const [genderPreference, setGenderPreference] = useState('any');
-  const [tags, setTags] = useState('');
-  const [nsfwEnabled, setNsfwEnabled] = useState(false);
+  // Load saved preferences from localStorage
+  const [gender, setGender] = useState(() => localStorage.getItem('ghostlink_gender') || '');
+  const [genderPreference, setGenderPreference] = useState(() => localStorage.getItem('ghostlink_genderPreference') || 'any');
+  const [tags, setTags] = useState(() => localStorage.getItem('ghostlink_tags') || '');
+  const [nsfwEnabled, setNsfwEnabled] = useState(() => localStorage.getItem('ghostlink_nsfw') === 'true');
   const [showNsfwWarning, setShowNsfwWarning] = useState(false);
 
   const handleSubmit = (e) => {
@@ -22,6 +23,12 @@ function LandingPage({ onStartChat }) {
       return;
     }
 
+    // Save preferences to localStorage
+    localStorage.setItem('ghostlink_gender', gender);
+    localStorage.setItem('ghostlink_genderPreference', genderPreference);
+    localStorage.setItem('ghostlink_tags', tags);
+    localStorage.setItem('ghostlink_nsfw', nsfwEnabled);
+
     const tagArray = tags
       .split(',')
       .map(tag => tag.trim().toLowerCase())
@@ -36,6 +43,12 @@ function LandingPage({ onStartChat }) {
   };
 
   const confirmNsfw = () => {
+    // Save preferences to localStorage
+    localStorage.setItem('ghostlink_gender', gender);
+    localStorage.setItem('ghostlink_genderPreference', genderPreference);
+    localStorage.setItem('ghostlink_tags', tags);
+    localStorage.setItem('ghostlink_nsfw', 'true');
+
     const tagArray = tags
       .split(',')
       .map(tag => tag.trim().toLowerCase())

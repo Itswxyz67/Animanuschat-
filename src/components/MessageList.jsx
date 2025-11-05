@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { detectEmbedType } from '../utils/embedParser';
 
 function MessageList({ messages, currentUserId }) {
   const messagesEndRef = useRef(null);
@@ -18,6 +19,58 @@ function MessageList({ messages, currentUserId }) {
       hour: '2-digit', 
       minute: '2-digit' 
     });
+  };
+
+  const renderEmbed = (embedData) => {
+    if (!embedData) return null;
+
+    switch (embedData.type) {
+      case 'youtube':
+        return (
+          <div className="rounded-xl overflow-hidden">
+            <iframe
+              width="100%"
+              height="200"
+              src={`https://www.youtube.com/embed/${embedData.id}`}
+              title="YouTube video"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="max-w-full"
+            />
+          </div>
+        );
+      
+      case 'twitter':
+        return (
+          <div className="rounded-xl overflow-hidden bg-slate-600 p-3">
+            <a 
+              href={embedData.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-sky-400 hover:underline text-sm"
+            >
+              View Tweet on Twitter/X →
+            </a>
+          </div>
+        );
+      
+      case 'image':
+        return (
+          <img
+            src={embedData.url}
+            alt="Linked image"
+            className="rounded-xl max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+            onClick={() => window.open(embedData.url, '_blank')}
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        );
+      
+      default:
+        return null;
+    }
   };
 
   return (
@@ -57,9 +110,20 @@ function MessageList({ messages, currentUserId }) {
                     isSent ? 'message-sent' : 'message-received'
                   } ${message.isTemp ? 'opacity-50' : ''}`}
                 >
-                  {message.type === 'text' && (
-                    <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{message.text}</p>
-                  )}
+                  {message.type === 'text' && (() => {
+                    const embedData = detectEmbedType(message.text);
+                    
+                    return (
+                      <>
+                        <p className="whitespace-pre-wrap break-words text-sm leading-relaxed mb-2">{message.text}</p>
+                        {embedData && (
+                          <div className="mt-2">
+                            {renderEmbed(embedData)}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
 
                   {message.type === 'image' && message.imageUrl && (
                     <img
