@@ -39,6 +39,10 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
     const newRoomId = uuidv4();
     const roomRef = ref(db, `rooms/${newRoomId}`);
 
+    // Note: In production, consider using Firebase transactions to prevent race conditions
+    // For now, we rely on the matchmaking interval and removal from waiting list
+    // to minimize the chance of duplicate room creation
+    
     // Create room with both users
     await set(roomRef, {
       users: {
@@ -113,6 +117,45 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
     }, 2000);
   }, [findMatch]);
 
+  const handleSkip = useCallback(async () => {
+    if (roomId) {
+      // Leave current room
+      await remove(ref(db, `rooms/${roomId}/users/${userId}`));
+      
+      // Check if room is empty and delete it
+      const roomSnapshot = await get(ref(db, `rooms/${roomId}`));
+      if (roomSnapshot.exists()) {
+        const roomData = roomSnapshot.val();
+        const remainingUsers = Object.keys(roomData.users || {}).filter(id => id !== userId);
+        if (remainingUsers.length === 0) {
+          await remove(ref(db, `rooms/${roomId}`));
+        }
+      }
+    }
+
+    // Reset state
+    setMessages([]);
+    setPartnerTyping(false);
+    setPartnerConnected(false);
+    setPartnerNickname('');
+    setSearchAttempts(0);
+
+    // Start searching again
+    onSkip();
+  }, [db, roomId, userId, onSkip]);
+
+  const handlePartnerLeft = useCallback(() => {
+    setPartnerConnected(false);
+    // Optionally auto-search for new partner after a delay
+    setTimeout(() => {
+      if (window.confirm('Your partner left. Would you like to find a new one?')) {
+        handleSkip();
+      } else {
+        onLeaveRoom();
+      }
+    }, 1000);
+  }, [handleSkip, onLeaveRoom]);
+
   const listenToRoom = useCallback(() => {
     if (!roomId) return;
     
@@ -179,45 +222,6 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
       }
     }
   }, [db, roomId, userId]);
-
-  const handleSkip = useCallback(async () => {
-    if (roomId) {
-      // Leave current room
-      await remove(ref(db, `rooms/${roomId}/users/${userId}`));
-      
-      // Check if room is empty and delete it
-      const roomSnapshot = await get(ref(db, `rooms/${roomId}`));
-      if (roomSnapshot.exists()) {
-        const roomData = roomSnapshot.val();
-        const remainingUsers = Object.keys(roomData.users || {}).filter(id => id !== userId);
-        if (remainingUsers.length === 0) {
-          await remove(ref(db, `rooms/${roomId}`));
-        }
-      }
-    }
-
-    // Reset state
-    setMessages([]);
-    setPartnerTyping(false);
-    setPartnerConnected(false);
-    setPartnerNickname('');
-    setSearchAttempts(0);
-
-    // Start searching again
-    onSkip();
-  }, [db, roomId, userId, onSkip]);
-
-  const handlePartnerLeft = useCallback(() => {
-    setPartnerConnected(false);
-    // Optionally auto-search for new partner after a delay
-    setTimeout(() => {
-      if (window.confirm('Your partner left. Would you like to find a new one?')) {
-        handleSkip();
-      } else {
-        onLeaveRoom();
-      }
-    }, 1000);
-  }, [handleSkip, onLeaveRoom]);
 
   // Effect: Join waiting list when searching
   useEffect(() => {

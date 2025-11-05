@@ -1,7 +1,15 @@
 import axios from 'axios';
 
+// Note: The API key should always be set in environment variables
+// The fallback key is provided for demo purposes only and may be rate-limited
+// Get your own free API key from https://freeimage.host/page/api
 const FREEIMAGE_API_KEY = import.meta.env.VITE_FREEIMAGE_API_KEY || '6d207e02198a847aa98d0a2a901485a5';
 const UPLOAD_URL = 'https://freeimage.host/api/1/upload';
+
+// Warn if using default API key
+if (!import.meta.env.VITE_FREEIMAGE_API_KEY) {
+  console.warn('Warning: Using default FreeImage API key. Please set VITE_FREEIMAGE_API_KEY in your .env file to avoid rate limiting.');
+}
 
 export const uploadImage = async (file) => {
   try {

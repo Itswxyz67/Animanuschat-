@@ -1,7 +1,7 @@
-// Generate a random anonymous nickname in format "Ghost#123"
+// Generate a random anonymous nickname in format "Ghost#12345"
 export const generateNickname = () => {
-  const randomNum = Math.floor(Math.random() * 1000);
-  return `Ghost#${randomNum.toString().padStart(3, '0')}`;
+  const randomNum = Math.floor(Math.random() * 100000);
+  return `Ghost#${randomNum.toString().padStart(5, '0')}`;
 };
 
 // Store nickname in sessionStorage to persist during session

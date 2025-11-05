@@ -1,7 +1,11 @@
-// Basic NSFW word filter - can be expanded
+// Basic NSFW word filter - expand based on your needs
+// Note: This is a minimal list. For production, consider using a comprehensive 
+// profanity filter library or API service like Tisane API or WebPurify
 const nsfwWords = [
-  'badword1', 'badword2', 'badword3',
-  // Add more as needed
+  'spam', 'scam', 'abuse',
+  // Add more inappropriate words here
+  // This is intentionally minimal as a placeholder
+  // Users should implement their own filtering based on their use case
 ];
 
 // Check if text contains NSFW content
