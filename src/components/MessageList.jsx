@@ -21,11 +21,12 @@ function MessageList({ messages, currentUserId }) {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-slate-900">
       {messages.length === 0 && (
         <div className="text-center text-gray-500 mt-8">
-          <p className="text-4xl mb-2">👋</p>
-          <p>Say hi to start the conversation!</p>
+          <p className="text-4xl mb-3">👋</p>
+          <p className="text-base">Say hi to start the conversation!</p>
+          <p className="text-xs text-gray-600 mt-2">Your messages are end-to-end temporary</p>
         </div>
       )}
 
@@ -36,15 +37,16 @@ function MessageList({ messages, currentUserId }) {
           return (
             <motion.div
               key={message.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className={`flex ${isSent ? 'justify-end' : 'justify-start'}`}
+              transition={{ duration: 0.2 }}
+              className={`flex ${isSent ? 'justify-end' : 'justify-start'} mb-1`}
             >
-              <div className={`max-w-[80%] md:max-w-[60%]`}>
-                {/* Nickname */}
+              <div className={`max-w-[75%] md:max-w-[65%]`}>
+                {/* Nickname - only for received messages */}
                 {!isSent && (
-                  <div className="text-xs text-gray-400 mb-1 ml-2">
+                  <div className="text-xs font-medium text-sky-400 mb-1 ml-3">
                     {message.senderNickname}
                   </div>
                 )}
@@ -56,14 +58,14 @@ function MessageList({ messages, currentUserId }) {
                   } ${message.isTemp ? 'opacity-50' : ''}`}
                 >
                   {message.type === 'text' && (
-                    <p className="whitespace-pre-wrap break-words">{message.text}</p>
+                    <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{message.text}</p>
                   )}
 
                   {message.type === 'image' && message.imageUrl && (
                     <img
                       src={message.imageUrl}
                       alt="Shared image"
-                      className="rounded-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                      className="rounded-xl max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => window.open(message.imageUrl, '_blank')}
                     />
                   )}
@@ -71,7 +73,7 @@ function MessageList({ messages, currentUserId }) {
                   {/* Timestamp */}
                   <div
                     className={`text-xs mt-1 ${
-                      isSent ? 'text-sky-100' : 'text-gray-400'
+                      isSent ? 'text-sky-100 opacity-80' : 'text-gray-500'
                     }`}
                   >
                     {formatTime(message.timestamp)}
