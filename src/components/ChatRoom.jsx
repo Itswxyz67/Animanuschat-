@@ -448,7 +448,14 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
               <span className="font-semibold text-base truncate">{partnerNickname || 'Ghost User'}</span>
             </div>
             {partnerTyping ? (
-              <span className="text-sm text-sky-400 animate-pulse">typing...</span>
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-sky-400">typing</span>
+                <div className="flex gap-1">
+                  <span className="typing-dot" style={{ animationDelay: '0ms' }}>•</span>
+                  <span className="typing-dot" style={{ animationDelay: '200ms' }}>•</span>
+                  <span className="typing-dot" style={{ animationDelay: '400ms' }}>•</span>
+                </div>
+              </div>
             ) : (
               <span className={`text-xs ${partnerConnected ? 'text-green-400' : 'text-gray-500'}`}>
                 {partnerConnected ? 'online' : 'offline'}
@@ -475,7 +482,12 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
       </div>
 
       {/* Messages */}
-      <MessageList messages={messages} currentUserId={userId} />
+      <MessageList 
+        messages={messages} 
+        currentUserId={userId} 
+        partnerTyping={partnerTyping}
+        partnerNickname={partnerNickname}
+      />
 
       {/* Input */}
       <MessageInput

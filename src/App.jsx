@@ -4,14 +4,14 @@ import LandingPage from './components/LandingPage';
 import ChatRoom from './components/ChatRoom';
 import { getNickname } from './utils/nickname';
 
-const THEMES = ['dark', 'light', 'midnight', 'sunset'];
+const THEMES = ['dark', 'light', 'midnight', 'sunset', 'ocean', 'forest', 'neon', 'dracula'];
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('landing'); // 'landing', 'searching', 'chatting'
   const [userProfile, setUserProfile] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [theme, setTheme] = useState('dark');
-  const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [firebaseReady, setFirebaseReady] = useState(false);
 
   useEffect(() => {
@@ -40,11 +40,24 @@ function App() {
     setTheme(newTheme);
     localStorage.setItem('ghostlink_theme', newTheme);
     applyTheme(newTheme);
-    setShowThemeSelector(false);
   };
 
-  const toggleTheme = () => {
-    setShowThemeSelector(!showThemeSelector);
+  const toggleSettings = () => {
+    setShowSettings(!showSettings);
+  };
+
+  const getThemeEmoji = (themeName) => {
+    const emojiMap = {
+      dark: '🌙',
+      light: '☀️',
+      midnight: '🌃',
+      sunset: '🌅',
+      ocean: '🌊',
+      forest: '🌲',
+      neon: '⚡',
+      dracula: '🧛'
+    };
+    return emojiMap[themeName] || '🎨';
   };
 
   const handleStartChat = (profile) => {
@@ -85,32 +98,89 @@ function App() {
 
   return (
     <div className="min-h-screen">
-      {/* Theme Selector - Always visible */}
+      {/* Settings Button - Always visible */}
       <div className="fixed top-4 right-4 z-50">
         <button
-          onClick={toggleTheme}
-          className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
-          aria-label="Change theme"
+          onClick={toggleSettings}
+          className="p-3 rounded-xl bg-slate-800/80 backdrop-blur-sm hover:bg-slate-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform"
+          aria-label="Open settings"
         >
-          {theme === 'dark' ? '🌙' : theme === 'light' ? '☀️' : theme === 'midnight' ? '🌃' : '🌅'}
+          ⚙️
         </button>
-        
-        {showThemeSelector && (
-          <div className="absolute top-12 right-0 bg-slate-800 rounded-lg shadow-xl p-2 min-w-[150px]">
-            {THEMES.map((t) => (
-              <button
-                key={t}
-                onClick={() => changeTheme(t)}
-                className={`w-full text-left px-3 py-2 rounded hover:bg-slate-700 transition-colors capitalize ${
-                  theme === t ? 'bg-slate-700 text-sky-400' : ''
-                }`}
-              >
-                {t === 'dark' ? '🌙 Dark' : t === 'light' ? '☀️ Light' : t === 'midnight' ? '🌃 Midnight' : '🌅 Sunset'}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
+
+      {/* Settings Panel */}
+      {showSettings && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={toggleSettings}
+        >
+          <div 
+            className="bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-sky-600 bg-clip-text text-transparent">⚙️ Settings</h2>
+              <button
+                onClick={toggleSettings}
+                className="text-gray-400 hover:text-white transition-colors text-2xl"
+                aria-label="Close settings"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              {/* Theme Selection */}
+              <div>
+                <h3 className="text-lg font-semibold mb-3 text-gray-200">🎨 Theme</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {THEMES.map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => changeTheme(t)}
+                      className={`px-4 py-3 rounded-xl capitalize font-medium transition-all transform hover:scale-105 ${
+                        theme === t
+                          ? 'bg-gradient-to-br from-sky-500 to-sky-600 text-white shadow-lg shadow-sky-500/30'
+                          : 'bg-slate-700 hover:bg-slate-600 text-gray-300'
+                      }`}
+                    >
+                      {getThemeEmoji(t)} {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Theme Preview */}
+              <div className="border-t border-slate-700 pt-4">
+                <h3 className="text-sm font-semibold mb-2 text-gray-400">Preview</h3>
+                <div className="bg-slate-700/50 rounded-lg p-4 space-y-2">
+                  <div className="flex justify-end">
+                    <div className="message-bubble message-sent max-w-[70%]">
+                      Your message looks like this! 👋
+                    </div>
+                  </div>
+                  <div className="flex justify-start">
+                    <div className="message-bubble message-received max-w-[70%]">
+                      Partner&apos;s message appears here 💬
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* About */}
+              <div className="border-t border-slate-700 pt-4 text-center">
+                <p className="text-sm text-gray-400">
+                  GhostLink v1.0.0
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Anonymous • Secure • Free
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {currentScreen === 'landing' && (
         <LandingPage onStartChat={handleStartChat} />

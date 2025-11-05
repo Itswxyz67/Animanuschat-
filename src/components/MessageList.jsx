@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { detectEmbedType } from '../utils/embedParser';
 
-function MessageList({ messages, currentUserId }) {
+function MessageList({ messages, currentUserId, partnerTyping, partnerNickname }) {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -148,6 +148,29 @@ function MessageList({ messages, currentUserId }) {
           );
         })}
       </AnimatePresence>
+
+      {/* Typing Indicator Bubble */}
+      {partnerTyping && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="flex justify-start mb-1"
+        >
+          <div className="max-w-[75%] md:max-w-[65%]">
+            <div className="text-xs font-medium text-sky-400 mb-1 ml-3">
+              {partnerNickname || 'Partner'}
+            </div>
+            <div className="message-bubble message-received">
+              <div className="flex gap-1 py-1">
+                <span className="typing-dot" style={{ animationDelay: '0ms' }}>•</span>
+                <span className="typing-dot" style={{ animationDelay: '200ms' }}>•</span>
+                <span className="typing-dot" style={{ animationDelay: '400ms' }}>•</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       <div ref={messagesEndRef} />
     </div>
