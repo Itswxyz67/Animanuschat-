@@ -74,8 +74,9 @@ Or for detailed instructions: [VERCEL-SETUP.md](VERCEL-SETUP.md)
    ```
 
 5. **Set up Firebase Database Rules**
-   - In Firebase Console, go to Realtime Database → Rules
-   - Copy the rules from `firebase.rules.json` and publish them
+   - **Option A (CLI)**: Run `firebase deploy --only database`
+   - **Option B (Console)**: Copy rules from `firebase.rules.json` and paste in Firebase Console
+   - 📖 **Detailed guide with troubleshooting:** [FIREBASE-RULES-GUIDE.md](FIREBASE-RULES-GUIDE.md)
 
 6. **Run the development server**
    ```bash
@@ -112,6 +113,7 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for:
 - 🚀 **[Vercel Setup](VERCEL-SETUP.md)** - Detailed Vercel deployment
 - 🔍 **[Where to Find Values](WHERE-TO-FIND-VALUES.md)** - Firebase config help
 - 📦 **[Full Deployment Guide](DEPLOYMENT.md)** - All hosting options
+- 🔥 **[Firebase Rules Guide](FIREBASE-RULES-GUIDE.md)** - Database security rules setup
 - 🔒 **[Security Policy](SECURITY.md)** - Security info & vulnerabilities
 - 🎯 **[Features Overview](FEATURES.md)** - Complete feature list
 - 🤝 **[Contributing Guide](CONTRIBUTING.md)** - How to contribute
