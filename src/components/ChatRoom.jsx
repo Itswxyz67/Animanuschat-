@@ -211,14 +211,18 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
 
   const handlePartnerLeft = useCallback(() => {
     setPartnerConnected(false);
-    // Optionally auto-search for new partner after a delay
+    setMessages([]);
+    setPartnerTyping(false);
+    
+    // Show notification and offer to find new partner
     setTimeout(() => {
-      if (window.confirm('Your partner left. Would you like to find a new one?')) {
+      const findNew = window.confirm('Your partner left the chat. Would you like to find a new one?');
+      if (findNew) {
         handleSkip();
       } else {
         onLeaveRoom();
       }
-    }, 1000);
+    }, 500);
   }, [handleSkip, onLeaveRoom]);
 
   const listenToRoom = useCallback(() => {
@@ -239,11 +243,15 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
       const users = roomData.users || {};
       const partnerData = Object.entries(users).find(([id]) => id !== userId);
       
-      if (partnerData) {
-        const [, partner] = partnerData;
-        setPartnerConnected(partner.connected);
-        setPartnerNickname(partner.nickname);
+      if (!partnerData) {
+        // Partner left the room
+        handlePartnerLeft();
+        return;
       }
+      
+      const [, partner] = partnerData;
+      setPartnerConnected(partner.connected);
+      setPartnerNickname(partner.nickname);
 
       // Update messages
       if (roomData.messages) {
@@ -275,16 +283,25 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
   const leaveRoom = useCallback(async () => {
     if (!roomId) return;
     
-    await remove(ref(db, `rooms/${roomId}/users/${userId}`));
-    
-    // Check if room should be deleted
-    const roomSnapshot = await get(ref(db, `rooms/${roomId}`));
-    if (roomSnapshot.exists()) {
-      const roomData = roomSnapshot.val();
-      const remainingUsers = Object.keys(roomData.users || {}).filter(id => id !== userId);
-      if (remainingUsers.length === 0) {
-        await remove(ref(db, `rooms/${roomId}`));
+    try {
+      // Mark user as disconnected first
+      await set(ref(db, `rooms/${roomId}/users/${userId}/connected`), false);
+      
+      // Then remove user from room
+      await remove(ref(db, `rooms/${roomId}/users/${userId}`));
+      
+      // Check if room should be deleted
+      const roomSnapshot = await get(ref(db, `rooms/${roomId}`));
+      if (roomSnapshot.exists()) {
+        const roomData = roomSnapshot.val();
+        const remainingUsers = Object.keys(roomData.users || {}).filter(id => id !== userId);
+        if (remainingUsers.length === 0) {
+          // No users left, delete the entire room
+          await remove(ref(db, `rooms/${roomId}`));
+        }
       }
+    } catch (error) {
+      console.error('Error leaving room:', error);
     }
   }, [db, roomId, userId]);
 
@@ -322,26 +339,63 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
   const sendMessage = async (text) => {
     if (!roomId || !text.trim()) return;
 
-    // Apply NSFW filter if not in NSFW mode
-    const filteredText = userProfile.nsfwEnabled ? text : filterNSFW(text, true);
+    try {
+      // Check if room still exists and partner is connected
+      const roomSnapshot = await get(ref(db, `rooms/${roomId}`));
+      if (!roomSnapshot.exists()) {
+        console.error('Room no longer exists');
+        handlePartnerLeft();
+        return;
+      }
 
-    const messagesRef = ref(db, `rooms/${roomId}/messages`);
-    const newMessageRef = push(messagesRef);
+      const roomData = roomSnapshot.val();
+      const users = roomData.users || {};
+      const partnerExists = Object.keys(users).find(id => id !== userId);
+      
+      if (!partnerExists) {
+        console.error('Partner has left the room');
+        handlePartnerLeft();
+        return;
+      }
 
-    await set(newMessageRef, {
-      senderId: userId,
-      senderNickname: userProfile.nickname,
-      text: filteredText,
-      timestamp: Date.now(),
-      type: 'text'
-    });
+      // Apply NSFW filter if not in NSFW mode
+      const filteredText = userProfile.nsfwEnabled ? text : filterNSFW(text, true);
 
-    // Clear typing indicator
-    await set(ref(db, `rooms/${roomId}/typing/${userId}`), false);
+      const messagesRef = ref(db, `rooms/${roomId}/messages`);
+      const newMessageRef = push(messagesRef);
+
+      await set(newMessageRef, {
+        senderId: userId,
+        senderNickname: userProfile.nickname,
+        text: filteredText,
+        timestamp: Date.now(),
+        type: 'text'
+      });
+
+      // Clear typing indicator
+      await set(ref(db, `rooms/${roomId}/typing/${userId}`), false);
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      // Show error to user
+      alert('Failed to send message. Please try again.');
+    }
   };
 
   const sendImage = async (file) => {
     if (!roomId) return;
+
+    // Check if room still exists first
+    try {
+      const roomSnapshot = await get(ref(db, `rooms/${roomId}`));
+      if (!roomSnapshot.exists()) {
+        alert('Cannot send image: Chat room no longer exists');
+        handlePartnerLeft();
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking room:', error);
+      return;
+    }
 
     // Show uploading message
     const tempId = Date.now();
@@ -362,6 +416,14 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
       setMessages(prev => prev.filter(m => m.id !== `temp-${tempId}`));
 
       if (result.success) {
+        // Double-check room still exists before sending
+        const roomCheck = await get(ref(db, `rooms/${roomId}`));
+        if (!roomCheck.exists()) {
+          alert('Cannot send image: Partner left the chat');
+          handlePartnerLeft();
+          return;
+        }
+
         const messagesRef = ref(db, `rooms/${roomId}/messages`);
         const newMessageRef = push(messagesRef);
 
