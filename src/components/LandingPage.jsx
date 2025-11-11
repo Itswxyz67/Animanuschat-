@@ -67,53 +67,63 @@ function LandingPage({ onStartChat, onOpenSettings }) {
 
   if (showNsfwWarning) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-red-950/30 to-slate-950">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full bg-slate-800/90 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-red-900/50"
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          className="max-w-md w-full card-glass p-10 shadow-2xl border-2 border-red-500/30"
         >
-          <div className="text-center mb-6">
-            <div className="text-6xl mb-4">⚠️</div>
-            <h2 className="text-2xl font-bold text-red-400 mb-3">NSFW Content Warning</h2>
-            <p className="text-gray-300 text-sm leading-relaxed">
+          <div className="text-center mb-8">
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="text-7xl mb-6"
+            >
+              ⚠️
+            </motion.div>
+            <h2 className="text-3xl font-black text-red-400 mb-4 gradient-text">NSFW Content Warning</h2>
+            <p className="text-gray-300 text-base leading-relaxed font-semibold">
               You are about to enable NSFW mode. This means:
             </p>
-            <ul className="text-left text-gray-300 text-sm mt-4 space-y-2.5 bg-slate-900/50 p-4 rounded-xl">
-              <li className="flex items-start gap-2">
-                <span className="text-red-400">•</span>
-                <span>You may encounter adult content</span>
+            <ul className="text-left text-gray-300 text-sm mt-6 space-y-3 bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-700/50">
+              <li className="flex items-start gap-3">
+                <span className="text-red-400 text-xl font-bold">•</span>
+                <span className="font-semibold">You may encounter adult content</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-400">•</span>
-                <span>You will only be matched with others who have NSFW enabled</span>
+              <li className="flex items-start gap-3">
+                <span className="text-red-400 text-xl font-bold">•</span>
+                <span className="font-semibold">You will only be matched with others who have NSFW enabled</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-400">•</span>
-                <span>Content filters will be more permissive</span>
+              <li className="flex items-start gap-3">
+                <span className="text-red-400 text-xl font-bold">•</span>
+                <span className="font-semibold">Content filters will be more permissive</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-400">•</span>
-                <span className="font-semibold">You must be 18+ years old</span>
+              <li className="flex items-start gap-3">
+                <span className="text-red-400 text-xl font-bold">•</span>
+                <span className="font-black text-red-300">You must be 18+ years old</span>
               </li>
             </ul>
-            <p className="text-gray-400 text-xs mt-4 bg-red-900/20 p-3 rounded-lg">
+            <p className="text-gray-300 text-sm mt-6 bg-red-900/30 backdrop-blur-sm p-4 rounded-2xl font-semibold border border-red-500/30">
               By continuing, you confirm you are 18 years or older and consent to viewing adult content.
             </p>
           </div>
-          <div className="flex gap-3">
-            <button
+          <div className="flex gap-4">
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => setShowNsfwWarning(false)}
-              className="flex-1 btn-secondary py-3"
+              className="flex-1 btn-secondary py-4 text-base font-bold"
             >
               Cancel
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={confirmNsfw}
-              className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 px-4 py-3 rounded-lg font-semibold transition-all shadow-lg shadow-red-600/30"
+              className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 px-6 py-4 rounded-2xl font-black text-base transition-all shadow-2xl shadow-red-600/40 hover:shadow-red-600/60"
             >
               I&apos;m 18+, Continue
-            </button>
+            </motion.button>
           </div>
         </motion.div>
       </div>
@@ -122,11 +132,11 @@ function LandingPage({ onStartChat, onOpenSettings }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 relative overflow-hidden">
-      {/* Animated Background Elements */}
+      {/* Enhanced Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-20 left-10 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-pink-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 w-[450px] h-[450px] bg-indigo-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
       <motion.div
@@ -148,74 +158,91 @@ function LandingPage({ onStartChat, onOpenSettings }) {
         </div>
 
         {/* Logo/Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            className="text-6xl mb-4 inline-block"
+            className="text-7xl mb-6 inline-block"
           >
             <div className="relative">
-              <IoChatbubbles className="text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text" />
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 blur-2xl opacity-50"></div>
+              <IoChatbubbles className="text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text drop-shadow-2xl" />
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 blur-3xl opacity-60 animate-pulse"></div>
             </div>
           </motion.div>
-          <h1 className="text-5xl font-black gradient-text mb-3 tracking-tight">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-6xl font-black gradient-text mb-4 tracking-tight drop-shadow-lg"
+          >
             GhostLink
-          </h1>
-          <p className="text-gray-300 text-lg flex items-center justify-center gap-2 mb-4 font-medium">
-            <HiSparkles className="text-purple-400" />
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-gray-300 text-xl flex items-center justify-center gap-2.5 mb-6 font-bold"
+          >
+            <HiSparkles className="text-purple-400 text-2xl" />
             Anonymous 1-on-1 Random Chat
-            <HiSparkles className="text-purple-400" />
-          </p>
-          <div className="flex items-center justify-center gap-3 text-xs text-gray-400">
+            <HiSparkles className="text-purple-400 text-2xl" />
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex items-center justify-center gap-3 text-sm text-gray-400"
+          >
             <motion.span
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center gap-1.5 bg-slate-800/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-slate-700/50"
+              whileHover={{ scale: 1.08, y: -2 }}
+              className="flex items-center gap-2 bg-slate-800/60 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700/50 shadow-lg font-semibold"
             >
-              <IoLockClosed className="text-indigo-400" /> No login
+              <IoLockClosed className="text-indigo-400 text-lg" /> No login
             </motion.span>
             <motion.span
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center gap-1.5 bg-slate-800/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-slate-700/50"
+              whileHover={{ scale: 1.08, y: -2 }}
+              className="flex items-center gap-2 bg-slate-800/60 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700/50 shadow-lg font-semibold"
             >
-              <FaUserSecret className="text-purple-400" /> Anonymous
+              <FaUserSecret className="text-purple-400 text-lg" /> Anonymous
             </motion.span>
             <motion.span
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center gap-1.5 bg-slate-800/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-slate-700/50"
+              whileHover={{ scale: 1.08, y: -2 }}
+              className="flex items-center gap-2 bg-slate-800/60 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700/50 shadow-lg font-semibold"
             >
-              <IoShieldCheckmark className="text-pink-400" /> Free
+              <IoShieldCheckmark className="text-pink-400 text-lg" /> Free
             </motion.span>
-          </div>
+          </motion.div>
         </div>
 
         {/* Form */}
         <motion.form
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
           onSubmit={handleSubmit}
-          className="card-glass p-8 space-y-5"
+          className="card-glass p-10 space-y-6"
         >
           {/* Gender Selection */}
           <div>
-            <label className="block text-sm font-bold mb-3 gradient-text">Your Gender</label>
+            <label className="block text-base font-black mb-4 gradient-text">Your Gender</label>
             <div className="grid grid-cols-3 gap-3">
               {['male', 'female', 'other'].map((g) => (
                 <motion.button
                   key={g}
                   type="button"
                   onClick={() => setGender(g)}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.08, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`py-3.5 rounded-2xl capitalize font-semibold transition-all ${
+                  className={`py-4 rounded-2xl capitalize font-bold text-base transition-all shadow-lg ${
                     gender === g
-                      ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xl shadow-purple-500/40 border-0'
-                      : 'bg-slate-700/50 backdrop-blur-sm hover:bg-slate-600/50 text-gray-300 border border-slate-600/50'
+                      ? 'bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xl shadow-purple-500/50 border-0'
+                      : 'bg-slate-700/60 backdrop-blur-md hover:bg-slate-600/70 text-gray-300 border-2 border-slate-600/40'
                   }`}
                 >
-                  {g === 'male' ? '👨' : g === 'female' ? '👩' : '🧑'} {g}
+                  <span className="text-2xl">{g === 'male' ? '👨' : g === 'female' ? '👩' : '🧑'}</span>
+                  <br />
+                  <span className="text-sm">{g}</span>
                 </motion.button>
               ))}
             </div>
@@ -223,33 +250,33 @@ function LandingPage({ onStartChat, onOpenSettings }) {
 
           {/* Gender Preference */}
           <div>
-            <label className="block text-sm font-bold mb-3 gradient-text">Looking for</label>
+            <label className="block text-base font-black mb-4 gradient-text">Looking for</label>
             <select
               value={genderPreference}
               onChange={(e) => setGenderPreference(e.target.value)}
-              className="input-field font-medium cursor-pointer"
+              className="input-field font-semibold cursor-pointer py-4 text-base shadow-lg hover:shadow-xl transition-all"
             >
-              <option value="any">Anyone</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="any">Anyone 🌟</option>
+              <option value="male">Male 👨</option>
+              <option value="female">Female 👩</option>
+              <option value="other">Other 🧑</option>
             </select>
           </div>
 
           {/* Interest Tags */}
           <div>
-            <label className="block text-sm font-bold mb-3 gradient-text">
-              Interests <span className="text-gray-500 text-xs font-normal">(optional)</span>
+            <label className="block text-base font-black mb-4 gradient-text">
+              Interests <span className="text-gray-400 text-sm font-semibold">(optional)</span>
             </label>
             <input
               type="text"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               placeholder="e.g., gaming, music, anime, tech"
-              className="input-field font-medium"
+              className="input-field font-semibold py-4 text-base shadow-lg hover:shadow-xl transition-all"
             />
-            <p className="text-xs text-gray-400 mt-2.5 flex items-center gap-1.5">
-              <HiSparkles className="text-purple-400" />
+            <p className="text-sm text-gray-400 mt-3 flex items-center gap-2 bg-purple-500/10 backdrop-blur-sm px-4 py-2.5 rounded-xl">
+              <HiSparkles className="text-purple-400 text-lg" />
               Add interests to match with people who share your hobbies
             </p>
           </div>
@@ -277,23 +304,23 @@ function LandingPage({ onStartChat, onOpenSettings }) {
           {/* Start Button */}
           <motion.button
             type="submit"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full btn-primary text-lg py-4 flex items-center justify-center gap-2.5 mt-6"
+            whileHover={{ scale: 1.03, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            className="w-full btn-primary text-xl py-5 flex items-center justify-center gap-3 mt-8 font-black shadow-2xl"
           >
-            <FaRocket className="text-xl" /> Start Chatting
+            <FaRocket className="text-2xl" /> Start Chatting
           </motion.button>
 
           {/* Privacy Notice */}
-          <div className="text-center space-y-2 pt-2">
-            <p className="text-xs text-gray-400 leading-relaxed flex items-center justify-center gap-1.5">
-              <IoLockClosed className="text-indigo-400" /> Your privacy is protected. Messages are temporary.
+          <div className="text-center space-y-3 pt-4 border-t border-slate-700/50">
+            <p className="text-sm text-gray-300 leading-relaxed flex items-center justify-center gap-2 font-semibold">
+              <IoLockClosed className="text-indigo-400 text-lg" /> Your privacy is protected. Messages are temporary.
             </p>
-            <p className="text-xs text-gray-500 flex items-center justify-center gap-1.5">
-              <IoShieldCheckmark className="text-pink-400" /> We don&apos;t collect any personal data.
+            <p className="text-sm text-gray-400 flex items-center justify-center gap-2 font-semibold">
+              <IoShieldCheckmark className="text-pink-400 text-lg" /> We don&apos;t collect any personal data.
             </p>
-            <p className="text-xs text-gray-500 flex items-center justify-center gap-1.5">
-              <HiSparkles className="text-purple-400" /> Use ||text|| for spoilers that reveal on click
+            <p className="text-sm text-gray-400 flex items-center justify-center gap-2 bg-slate-800/40 backdrop-blur-sm px-4 py-2 rounded-xl">
+              <HiSparkles className="text-purple-400 text-lg" /> Use ||text|| for spoilers that reveal on click
             </p>
           </div>
         </motion.form>

@@ -27,15 +27,15 @@
   }
   
   .message-bubble {
-    @apply px-5 py-3 rounded-3xl break-words shadow-xl transition-all backdrop-blur-sm;
+    @apply px-6 py-4 rounded-[24px] break-words shadow-2xl transition-all backdrop-blur-md border;
   }
   
   .message-sent {
-    @apply bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white rounded-br-lg shadow-2xl shadow-purple-500/40;
+    @apply bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white rounded-br-md shadow-2xl shadow-purple-500/50 border-purple-400/30 hover:shadow-purple-500/70;
   }
   
   .message-received {
-    @apply bg-slate-700/70 backdrop-blur-sm text-ghost-text rounded-bl-lg shadow-xl;
+    @apply bg-slate-700/80 backdrop-blur-md text-ghost-text rounded-bl-md shadow-2xl border-slate-600/50 hover:bg-slate-700/90;
   }
   
   .card-glass {
@@ -278,7 +278,7 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -287,26 +287,31 @@
 }
 
 .fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out;
 }
 
 @keyframes typingDot {
   0%, 60%, 100% {
     opacity: 0.3;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
   30% {
     opacity: 1;
-    transform: translateY(-3px);
+    transform: translateY(-4px) scale(1.2);
   }
 }
 
 .typing-dot {
   display: inline-block;
-  color: #38bdf8;
+  color: #818cf8;
   animation: typingDot 1.4s infinite;
-  font-size: 1.2em;
+  font-size: 1.3em;
   line-height: 1;
+  font-weight: bold;
 }
 
 @keyframes shimmer {

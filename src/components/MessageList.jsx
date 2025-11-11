@@ -113,12 +113,36 @@ function MessageList({ messages, currentUserId, partnerTyping, partnerNickname }
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-slate-900">
+    <div className="flex-1 overflow-y-auto p-6 space-y-3 bg-gradient-to-b from-slate-900/95 via-slate-900/90 to-slate-900/95 backdrop-blur-sm">
       {messages.length === 0 && (
-        <div className="text-center text-gray-500 mt-8">
-          <p className="text-4xl mb-3">👋</p>
-          <p className="text-base">Say hi to start the conversation!</p>
-          <p className="text-xs text-gray-600 mt-2">Your messages are end-to-end temporary</p>
+        <div className="text-center text-gray-400 mt-16 animate-fade-in">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 200 }}
+            className="text-7xl mb-6 inline-block"
+          >
+            <div className="relative">
+              <span className="text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text">👋</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 blur-xl opacity-30"></div>
+            </div>
+          </motion.div>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-xl font-semibold gradient-text mb-2"
+          >
+            Start the conversation!
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-sm text-gray-500 bg-slate-800/30 backdrop-blur-sm px-4 py-2 rounded-full inline-block"
+          >
+            🔒 Messages are temporary and private
+          </motion.p>
         </div>
       )}
 
@@ -129,22 +153,24 @@ function MessageList({ messages, currentUserId, partnerTyping, partnerNickname }
           return (
             <motion.div
               key={message.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className={`flex ${isSent ? 'justify-end' : 'justify-start'} mb-1`}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className={`flex ${isSent ? 'justify-end' : 'justify-start'} mb-2`}
             >
-              <div className={`max-w-[75%] md:max-w-[65%]`}>
+              <div className={`max-w-[80%] md:max-w-[70%] lg:max-w-[60%]`}>
                 {/* Nickname - only for received messages */}
                 {!isSent && (
-                  <div className="text-xs font-medium text-sky-400 mb-1 ml-3">
+                  <div className="text-xs font-bold text-indigo-400 mb-1.5 ml-4 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
                     {message.senderNickname}
                   </div>
                 )}
 
                 {/* Message Bubble */}
-                <div
+                <motion.div
+                  whileHover={{ scale: 1.01 }}
                   className={`message-bubble ${
                     isSent ? 'message-sent' : 'message-received'
                   } ${message.isTemp ? 'opacity-50' : ''}`}
@@ -155,7 +181,7 @@ function MessageList({ messages, currentUserId, partnerTyping, partnerNickname }
                     
                     return (
                       <>
-                        <p className="whitespace-pre-wrap break-words text-sm leading-relaxed mb-2">
+                        <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed mb-2">
                           {textParts.map((part, index) => {
                             if (part.type === 'spoiler') {
                               return <SpoilerText key={index}>{part.content}</SpoilerText>;
@@ -173,23 +199,24 @@ function MessageList({ messages, currentUserId, partnerTyping, partnerNickname }
                   })()}
 
                   {message.type === 'image' && message.imageUrl && (
-                    <img
+                    <motion.img
+                      whileHover={{ scale: 1.02 }}
                       src={message.imageUrl}
                       alt="Shared image"
-                      className="rounded-xl max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                      className="rounded-2xl max-w-full h-auto cursor-pointer hover:opacity-95 transition-all shadow-lg"
                       onClick={() => window.open(message.imageUrl, '_blank')}
                     />
                   )}
 
                   {/* Timestamp */}
                   <div
-                    className={`text-xs mt-1 ${
-                      isSent ? 'text-sky-100 opacity-80' : 'text-gray-500'
+                    className={`text-[11px] mt-2 font-medium ${
+                      isSent ? 'text-white/70' : 'text-gray-400'
                     }`}
                   >
                     {formatTime(message.timestamp)}
                   </div>
-                </div>
+                </motion.div>
               </div>
             </motion.div>
           );
@@ -199,20 +226,22 @@ function MessageList({ messages, currentUserId, partnerTyping, partnerNickname }
       {/* Typing Indicator Bubble */}
       {partnerTyping && (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          className="flex justify-start mb-1"
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+          className="flex justify-start mb-2"
         >
-          <div className="max-w-[75%] md:max-w-[65%]">
-            <div className="text-xs font-medium text-sky-400 mb-1 ml-3">
+          <div className="max-w-[80%] md:max-w-[70%] lg:max-w-[60%]">
+            <div className="text-xs font-bold text-indigo-400 mb-1.5 ml-4 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
               {partnerNickname || 'Partner'}
             </div>
             <div className="message-bubble message-received">
-              <div className="flex gap-1 py-1">
-                <span className="typing-dot" style={{ animationDelay: '0ms' }}>•</span>
-                <span className="typing-dot" style={{ animationDelay: '200ms' }}>•</span>
-                <span className="typing-dot" style={{ animationDelay: '400ms' }}>•</span>
+              <div className="flex gap-1.5 py-1">
+                <span className="typing-dot" style={{ animationDelay: '0ms' }}>●</span>
+                <span className="typing-dot" style={{ animationDelay: '200ms' }}>●</span>
+                <span className="typing-dot" style={{ animationDelay: '400ms' }}>●</span>
               </div>
             </div>
           </div>
