@@ -3,34 +3,47 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    @apply transition-colors duration-200;
+  }
+  
   body {
     @apply bg-ghost-dark text-ghost-text;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply px-4 py-2 bg-ghost-accent text-white rounded-lg hover:bg-sky-500 transition-all font-medium shadow-lg hover:shadow-xl;
+    @apply px-6 py-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-2xl hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition-all font-semibold shadow-2xl shadow-purple-500/50 hover:shadow-purple-500/70 transform hover:scale-[1.02] active:scale-[0.98];
   }
   
   .btn-secondary {
-    @apply px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-all font-medium;
+    @apply px-5 py-2.5 bg-slate-700/50 backdrop-blur-sm text-white rounded-xl hover:bg-slate-600/50 transition-all font-medium border border-slate-600/50 hover:border-slate-500/50 transform hover:scale-[1.02] active:scale-[0.98];
   }
   
   .input-field {
-    @apply w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl focus:outline-none focus:border-ghost-accent focus:ring-2 focus:ring-ghost-accent/20 text-ghost-text transition-all;
+    @apply w-full px-4 py-3 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl focus:outline-none focus:border-purple-500/50 focus:ring-4 focus:ring-purple-500/20 text-ghost-text transition-all placeholder-slate-500;
   }
   
   .message-bubble {
-    @apply px-4 py-2.5 rounded-2xl break-words shadow-md;
+    @apply px-5 py-3 rounded-3xl break-words shadow-xl transition-all backdrop-blur-sm;
   }
   
   .message-sent {
-    @apply bg-gradient-to-br from-sky-500 to-sky-600 text-white rounded-br-md;
+    @apply bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white rounded-br-lg shadow-2xl shadow-purple-500/40;
   }
   
   .message-received {
-    @apply bg-slate-700 text-ghost-text rounded-bl-md;
+    @apply bg-slate-700/70 backdrop-blur-sm text-ghost-text rounded-bl-lg shadow-xl;
+  }
+  
+  .card-glass {
+    @apply bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-2xl;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent;
   }
 }
 
@@ -111,6 +124,139 @@
   @apply bg-orange-500;
 }
 
+/* Ocean theme - blue/cyan colors */
+.ocean {
+  color-scheme: dark;
+}
+
+.ocean body {
+  @apply bg-cyan-950 text-cyan-50;
+}
+
+.ocean .bg-slate-800 {
+  @apply bg-cyan-900;
+}
+
+.ocean .bg-slate-900 {
+  @apply bg-gradient-to-b from-cyan-950 to-blue-950;
+}
+
+.ocean .bg-slate-700 {
+  @apply bg-cyan-800;
+}
+
+.ocean .message-sent {
+  @apply bg-gradient-to-br from-cyan-500 to-blue-500;
+}
+
+.ocean .text-sky-400 {
+  @apply text-cyan-400;
+}
+
+/* Forest theme - green colors */
+.forest {
+  color-scheme: dark;
+}
+
+.forest body {
+  @apply bg-green-950 text-green-50;
+}
+
+.forest .bg-slate-800 {
+  @apply bg-green-900;
+}
+
+.forest .bg-slate-900 {
+  @apply bg-gradient-to-b from-green-950 to-emerald-950;
+}
+
+.forest .bg-slate-700 {
+  @apply bg-green-800;
+}
+
+.forest .message-sent {
+  @apply bg-gradient-to-br from-green-500 to-emerald-500;
+}
+
+.forest .text-sky-400 {
+  @apply text-green-400;
+}
+
+/* Neon theme - vibrant colors */
+.neon {
+  color-scheme: dark;
+}
+
+.neon body {
+  @apply bg-gray-950 text-gray-50;
+}
+
+.neon .bg-slate-800 {
+  @apply bg-gray-900 border border-pink-500/20;
+}
+
+.neon .bg-slate-900 {
+  @apply bg-gradient-to-br from-gray-950 via-purple-950 to-gray-950;
+}
+
+.neon .bg-slate-700 {
+  @apply bg-gray-800 border border-purple-500/20;
+}
+
+.neon .message-sent {
+  @apply bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-500 shadow-lg shadow-purple-500/50;
+}
+
+.neon .message-received {
+  @apply border border-purple-500/30;
+}
+
+.neon .text-sky-400 {
+  @apply text-pink-400;
+}
+
+.neon button {
+  @apply transition-all hover:shadow-lg hover:shadow-purple-500/30;
+}
+
+/* Dracula theme - purple/pink colors */
+.dracula {
+  color-scheme: dark;
+}
+
+.dracula body {
+  background: #282a36;
+  color: #f8f8f2;
+}
+
+.dracula .bg-slate-800 {
+  background: #44475a;
+}
+
+.dracula .bg-slate-900 {
+  background: #282a36;
+}
+
+.dracula .bg-slate-700 {
+  background: #6272a4;
+}
+
+.dracula .message-sent {
+  @apply bg-gradient-to-br from-purple-500 to-pink-500;
+}
+
+.dracula .text-sky-400 {
+  color: #bd93f9;
+}
+
+.dracula .text-gray-400 {
+  color: #6272a4;
+}
+
+.dracula .border-slate-700 {
+  border-color: #44475a;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
@@ -128,7 +274,7 @@
   @apply bg-slate-600;
 }
 
-/* Animation */
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -142,4 +288,87 @@
 
 .fade-in {
   animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes typingDot {
+  0%, 60%, 100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+.typing-dot {
+  display: inline-block;
+  color: #38bdf8;
+  animation: typingDot 1.4s infinite;
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.6);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes spin-slow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+.animate-spin-slow:hover {
+  animation: spin-slow 1s linear infinite;
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% auto;
+  animation: gradient 3s linear infinite;
 }

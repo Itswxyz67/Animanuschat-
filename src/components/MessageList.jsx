@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { detectEmbedType } from '../utils/embedParser';
+import SpoilerText from './SpoilerText';
 
-function MessageList({ messages, currentUserId }) {
+function MessageList({ messages, currentUserId, partnerTyping, partnerNickname }) {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -19,6 +20,44 @@ function MessageList({ messages, currentUserId }) {
       hour: '2-digit', 
       minute: '2-digit' 
     });
+  };
+
+  // Parse text for spoilers using ||spoiler|| syntax
+  const parseTextWithSpoilers = (text) => {
+    const spoilerRegex = /\|\|(.*?)\|\|/g;
+    const parts = [];
+    let lastIndex = 0;
+    
+    // Use matchAll for safer iteration
+    const matches = [...text.matchAll(spoilerRegex)];
+    
+    matches.forEach((match) => {
+      // Add text before spoiler
+      if (match.index > lastIndex) {
+        parts.push({
+          type: 'text',
+          content: text.substring(lastIndex, match.index)
+        });
+      }
+      
+      // Add spoiler
+      parts.push({
+        type: 'spoiler',
+        content: match[1]
+      });
+      
+      lastIndex = match.index + match[0].length;
+    });
+    
+    // Add remaining text
+    if (lastIndex < text.length) {
+      parts.push({
+        type: 'text',
+        content: text.substring(lastIndex)
+      });
+    }
+    
+    return parts.length > 0 ? parts : [{ type: 'text', content: text }];
   };
 
   const renderEmbed = (embedData) => {
@@ -112,10 +151,18 @@ function MessageList({ messages, currentUserId }) {
                 >
                   {message.type === 'text' && (() => {
                     const embedData = detectEmbedType(message.text);
+                    const textParts = parseTextWithSpoilers(message.text);
                     
                     return (
                       <>
-                        <p className="whitespace-pre-wrap break-words text-sm leading-relaxed mb-2">{message.text}</p>
+                        <p className="whitespace-pre-wrap break-words text-sm leading-relaxed mb-2">
+                          {textParts.map((part, index) => {
+                            if (part.type === 'spoiler') {
+                              return <SpoilerText key={index}>{part.content}</SpoilerText>;
+                            }
+                            return <span key={index}>{part.content}</span>;
+                          })}
+                        </p>
                         {embedData && (
                           <div className="mt-2">
                             {renderEmbed(embedData)}
@@ -148,6 +195,29 @@ function MessageList({ messages, currentUserId }) {
           );
         })}
       </AnimatePresence>
+
+      {/* Typing Indicator Bubble */}
+      {partnerTyping && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="flex justify-start mb-1"
+        >
+          <div className="max-w-[75%] md:max-w-[65%]">
+            <div className="text-xs font-medium text-sky-400 mb-1 ml-3">
+              {partnerNickname || 'Partner'}
+            </div>
+            <div className="message-bubble message-received">
+              <div className="flex gap-1 py-1">
+                <span className="typing-dot" style={{ animationDelay: '0ms' }}>•</span>
+                <span className="typing-dot" style={{ animationDelay: '200ms' }}>•</span>
+                <span className="typing-dot" style={{ animationDelay: '400ms' }}>•</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       <div ref={messagesEndRef} />
     </div>

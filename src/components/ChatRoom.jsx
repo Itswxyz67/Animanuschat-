@@ -6,8 +6,13 @@ import { uploadImage } from '../services/imageUpload';
 import { canMatch, getMatchScore, filterNSFW } from '../utils/filters';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
+import { IoClose, IoSettingsSharp } from 'react-icons/io5';
+import { MdSkipNext } from 'react-icons/md';
+import { FaUserSecret } from 'react-icons/fa';
+import { HiStatusOnline, HiStatusOffline } from 'react-icons/hi';
+import { HiSparkles } from 'react-icons/hi2';
 
-function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSearching }) {
+function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSearching, onOpenSettings }) {
   const [messages, setMessages] = useState([]);
   const [partnerTyping, setPartnerTyping] = useState(false);
   const [partnerConnected, setPartnerConnected] = useState(false);
@@ -18,6 +23,7 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
   const db = getDb();
   const typingTimeoutRef = useRef(null);
   const matchCheckIntervalRef = useRef(null);
+  const errorTimeoutRefs = useRef([]);
 
   const joinWaitingList = useCallback(async () => {
     const waitingRef = ref(db, `waitingList/${userId}`);
@@ -205,14 +211,18 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
 
   const handlePartnerLeft = useCallback(() => {
     setPartnerConnected(false);
-    // Optionally auto-search for new partner after a delay
+    setMessages([]);
+    setPartnerTyping(false);
+    
+    // Show notification and offer to find new partner
     setTimeout(() => {
-      if (window.confirm('Your partner left. Would you like to find a new one?')) {
+      const findNew = window.confirm('Your partner left the chat. Would you like to find a new one?');
+      if (findNew) {
         handleSkip();
       } else {
         onLeaveRoom();
       }
-    }, 1000);
+    }, 500);
   }, [handleSkip, onLeaveRoom]);
 
   const listenToRoom = useCallback(() => {
@@ -233,11 +243,15 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
       const users = roomData.users || {};
       const partnerData = Object.entries(users).find(([id]) => id !== userId);
       
-      if (partnerData) {
-        const [, partner] = partnerData;
-        setPartnerConnected(partner.connected);
-        setPartnerNickname(partner.nickname);
+      if (!partnerData) {
+        // Partner left the room
+        handlePartnerLeft();
+        return;
       }
+      
+      const [, partner] = partnerData;
+      setPartnerConnected(partner.connected);
+      setPartnerNickname(partner.nickname);
 
       // Update messages
       if (roomData.messages) {
@@ -269,16 +283,25 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
   const leaveRoom = useCallback(async () => {
     if (!roomId) return;
     
-    await remove(ref(db, `rooms/${roomId}/users/${userId}`));
-    
-    // Check if room should be deleted
-    const roomSnapshot = await get(ref(db, `rooms/${roomId}`));
-    if (roomSnapshot.exists()) {
-      const roomData = roomSnapshot.val();
-      const remainingUsers = Object.keys(roomData.users || {}).filter(id => id !== userId);
-      if (remainingUsers.length === 0) {
-        await remove(ref(db, `rooms/${roomId}`));
+    try {
+      // Mark user as disconnected first
+      await set(ref(db, `rooms/${roomId}/users/${userId}/connected`), false);
+      
+      // Then remove user from room
+      await remove(ref(db, `rooms/${roomId}/users/${userId}`));
+      
+      // Check if room should be deleted
+      const roomSnapshot = await get(ref(db, `rooms/${roomId}`));
+      if (roomSnapshot.exists()) {
+        const roomData = roomSnapshot.val();
+        const remainingUsers = Object.keys(roomData.users || {}).filter(id => id !== userId);
+        if (remainingUsers.length === 0) {
+          // No users left, delete the entire room
+          await remove(ref(db, `rooms/${roomId}`));
+        }
       }
+    } catch (error) {
+      console.error('Error leaving room:', error);
     }
   }, [db, roomId, userId]);
 
@@ -307,32 +330,72 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
       if (roomId) {
         leaveRoom();
       }
+      // Clear all error message timeouts on unmount
+      errorTimeoutRefs.current.forEach(timeoutId => clearTimeout(timeoutId));
+      errorTimeoutRefs.current = [];
     };
   }, [roomId, isSearching, listenToRoom, setupDisconnectHandler, leaveRoom]);
 
   const sendMessage = async (text) => {
     if (!roomId || !text.trim()) return;
 
-    // Apply NSFW filter if not in NSFW mode
-    const filteredText = userProfile.nsfwEnabled ? text : filterNSFW(text, true);
+    try {
+      // Check if room still exists and partner is connected
+      const roomSnapshot = await get(ref(db, `rooms/${roomId}`));
+      if (!roomSnapshot.exists()) {
+        console.error('Room no longer exists');
+        handlePartnerLeft();
+        return;
+      }
 
-    const messagesRef = ref(db, `rooms/${roomId}/messages`);
-    const newMessageRef = push(messagesRef);
+      const roomData = roomSnapshot.val();
+      const users = roomData.users || {};
+      const partnerExists = Object.keys(users).find(id => id !== userId);
+      
+      if (!partnerExists) {
+        console.error('Partner has left the room');
+        handlePartnerLeft();
+        return;
+      }
 
-    await set(newMessageRef, {
-      senderId: userId,
-      senderNickname: userProfile.nickname,
-      text: filteredText,
-      timestamp: Date.now(),
-      type: 'text'
-    });
+      // Apply NSFW filter if not in NSFW mode
+      const filteredText = userProfile.nsfwEnabled ? text : filterNSFW(text, true);
 
-    // Clear typing indicator
-    await set(ref(db, `rooms/${roomId}/typing/${userId}`), false);
+      const messagesRef = ref(db, `rooms/${roomId}/messages`);
+      const newMessageRef = push(messagesRef);
+
+      await set(newMessageRef, {
+        senderId: userId,
+        senderNickname: userProfile.nickname,
+        text: filteredText,
+        timestamp: Date.now(),
+        type: 'text'
+      });
+
+      // Clear typing indicator
+      await set(ref(db, `rooms/${roomId}/typing/${userId}`), false);
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      // Show error to user
+      alert('Failed to send message. Please try again.');
+    }
   };
 
   const sendImage = async (file) => {
     if (!roomId) return;
+
+    // Check if room still exists first
+    try {
+      const roomSnapshot = await get(ref(db, `rooms/${roomId}`));
+      if (!roomSnapshot.exists()) {
+        alert('Cannot send image: Chat room no longer exists');
+        handlePartnerLeft();
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking room:', error);
+      return;
+    }
 
     // Show uploading message
     const tempId = Date.now();
@@ -340,30 +403,76 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
       id: `temp-${tempId}`,
       senderId: userId,
       senderNickname: userProfile.nickname,
-      text: 'Uploading image...',
+      text: '📤 Uploading image...',
       timestamp: tempId,
       type: 'text',
       isTemp: true
     }]);
 
-    const result = await uploadImage(file);
+    try {
+      const result = await uploadImage(file);
 
-    // Remove temp message
-    setMessages(prev => prev.filter(m => m.id !== `temp-${tempId}`));
+      // Remove temp message
+      setMessages(prev => prev.filter(m => m.id !== `temp-${tempId}`));
 
-    if (result.success) {
-      const messagesRef = ref(db, `rooms/${roomId}/messages`);
-      const newMessageRef = push(messagesRef);
+      if (result.success) {
+        // Double-check room still exists before sending
+        const roomCheck = await get(ref(db, `rooms/${roomId}`));
+        if (!roomCheck.exists()) {
+          alert('Cannot send image: Partner left the chat');
+          handlePartnerLeft();
+          return;
+        }
 
-      await set(newMessageRef, {
+        const messagesRef = ref(db, `rooms/${roomId}/messages`);
+        const newMessageRef = push(messagesRef);
+
+        await set(newMessageRef, {
+          senderId: userId,
+          senderNickname: userProfile.nickname,
+          imageUrl: result.url,
+          timestamp: Date.now(),
+          type: 'image'
+        });
+      } else {
+        // Show error in chat
+        setMessages(prev => [...prev, {
+          id: `error-${tempId}`,
+          senderId: userId,
+          senderNickname: 'System',
+          text: `❌ Failed to upload image: ${result.error}. Please try again or use a different image.`,
+          timestamp: Date.now(),
+          type: 'text',
+          isTemp: true
+        }]);
+        
+        // Remove error message after 5 seconds
+        const timeoutId = setTimeout(() => {
+          setMessages(prev => prev.filter(m => m.id !== `error-${tempId}`));
+        }, 5000);
+        errorTimeoutRefs.current.push(timeoutId);
+      }
+    } catch (error) {
+      // Remove temp message
+      setMessages(prev => prev.filter(m => m.id !== `temp-${tempId}`));
+      
+      // Show error
+      console.error('Image upload error:', error);
+      setMessages(prev => [...prev, {
+        id: `error-${tempId}`,
         senderId: userId,
-        senderNickname: userProfile.nickname,
-        imageUrl: result.url,
+        senderNickname: 'System',
+        text: '❌ Failed to upload image. Please try again.',
         timestamp: Date.now(),
-        type: 'image'
-      });
-    } else {
-      alert('Failed to upload image: ' + result.error);
+        type: 'text',
+        isTemp: true
+      }]);
+      
+      // Remove error message after 5 seconds
+      const timeoutId = setTimeout(() => {
+        setMessages(prev => prev.filter(m => m.id !== `error-${tempId}`));
+      }, 5000);
+      errorTimeoutRefs.current.push(timeoutId);
     }
   };
 
@@ -387,45 +496,63 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
 
   if (isSearching) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-slate-900">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 relative overflow-hidden">
+        {/* Animated background circles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center max-w-md w-full bg-slate-800 rounded-2xl p-8 shadow-2xl"
+          className="text-center max-w-md w-full card-glass p-10 relative z-10"
         >
           <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="text-7xl mb-6"
+            animate={{ 
+              rotate: 360,
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ 
+              rotate: { duration: 2, repeat: Infinity, ease: "linear" },
+              scale: { duration: 1, repeat: Infinity, ease: "easeInOut" }
+            }}
+            className="text-7xl mb-6 inline-block"
           >
-            👻
+            <div className="relative">
+              <FaUserSecret className="text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text" />
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 blur-2xl opacity-50"></div>
+            </div>
           </motion.div>
-          <h2 className="text-2xl font-bold mb-3 text-ghost-accent">Finding your match...</h2>
-          <p className="text-gray-400 mb-6 text-sm">
-            {searchAttempts === 0 ? 'Initializing matchmaking...' : searchAttempts < 5 ? 'Looking for someone with similar interests...' : `Still searching... (${searchAttempts}s)`}
+          <h2 className="text-3xl font-black mb-4 gradient-text">Finding your match...</h2>
+          <p className="text-gray-300 mb-8 text-base font-medium">
+            {searchAttempts === 0 ? '🔍 Initializing matchmaking...' : searchAttempts < 5 ? '✨ Looking for someone with similar interests...' : `⏳ Still searching... (${searchAttempts}s)`}
           </p>
-          <div className="flex gap-2 justify-center mb-8">
-            {[0, 1, 2].map((i) => (
+          <div className="flex gap-3 justify-center mb-10">
+            {[0, 1, 2, 3, 4].map((i) => (
               <motion.div
                 key={i}
                 animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
                 transition={{
-                  duration: 1,
+                  duration: 1.5,
                   repeat: Infinity,
-                  delay: i * 0.2
+                  delay: i * 0.15
                 }}
-                className="w-3 h-3 bg-gradient-to-br from-sky-400 to-sky-600 rounded-full shadow-lg"
+                className="w-3 h-3 bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-400 rounded-full shadow-xl"
               />
             ))}
           </div>
-          <button
+          <motion.button
             onClick={onLeaveRoom}
-            className="btn-secondary w-full py-3"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="btn-secondary w-full py-3.5 flex items-center justify-center gap-2 text-base font-semibold"
           >
-            Cancel Search
-          </button>
-          <p className="text-xs text-gray-600 mt-4">
-            Tip: Add interest tags for better matches!
+            <IoClose /> Cancel Search
+          </motion.button>
+          <p className="text-xs text-gray-400 mt-5 flex items-center justify-center gap-1.5">
+            <HiSparkles className="text-purple-400" /> Tip: Add interest tags for better matches!
           </p>
         </motion.div>
       </div>
@@ -433,49 +560,77 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-900">
-      {/* Header - Telegram style */}
-      <div className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between shadow-lg">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
+      {/* Header - Modern style */}
+      <div className="bg-slate-900/50 backdrop-blur-xl border-b border-slate-700/50 px-4 py-4 flex items-center justify-between shadow-2xl">
         <div className="flex items-center gap-3 flex-1 min-w-0">
           {/* Avatar circle */}
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-md ${
-            partnerConnected ? 'bg-gradient-to-br from-sky-500 to-sky-600' : 'bg-slate-600'
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold shadow-xl relative ${
+            partnerConnected ? 'bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500' : 'bg-slate-700/50 backdrop-blur-sm'
           }`}>
-            👻
+            <FaUserSecret />
+            {partnerConnected && (
+              <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 border-2 border-slate-900 rounded-full animate-pulse"></span>
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-base truncate">{partnerNickname || 'Ghost User'}</span>
+              <span className="font-bold text-lg truncate gradient-text">{partnerNickname || 'Ghost User'}</span>
             </div>
             {partnerTyping ? (
-              <span className="text-sm text-sky-400 animate-pulse">typing...</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm text-purple-400 font-medium">typing</span>
+                <div className="flex gap-1">
+                  <span className="typing-dot" style={{ animationDelay: '0ms' }}>•</span>
+                  <span className="typing-dot" style={{ animationDelay: '200ms' }}>•</span>
+                  <span className="typing-dot" style={{ animationDelay: '400ms' }}>•</span>
+                </div>
+              </div>
             ) : (
-              <span className={`text-xs ${partnerConnected ? 'text-green-400' : 'text-gray-500'}`}>
-                {partnerConnected ? 'online' : 'offline'}
+              <span className={`text-sm flex items-center gap-1.5 font-medium ${partnerConnected ? 'text-green-400' : 'text-gray-500'}`}>
+                {partnerConnected ? <><HiStatusOnline /> online</> : <><HiStatusOffline /> offline</>}
               </span>
             )}
           </div>
         </div>
         <div className="flex gap-2">
-          <button
+          <motion.button
+            onClick={onOpenSettings}
+            whileHover={{ scale: 1.05, rotate: 90 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-2.5 bg-slate-700/50 backdrop-blur-sm hover:bg-slate-600/50 rounded-xl transition-all text-base border border-slate-600/50"
+            title="Settings"
+          >
+            <IoSettingsSharp />
+          </motion.button>
+          <motion.button
             onClick={handleSkip}
-            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all text-sm font-medium"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-4 py-2 bg-slate-700/50 backdrop-blur-sm hover:bg-slate-600/50 rounded-xl transition-all text-sm font-semibold flex items-center gap-2 border border-slate-600/50"
             title="Skip to next person"
           >
-            ⏭️ Next
-          </button>
-          <button
+            <MdSkipNext className="text-lg" /> Next
+          </motion.button>
+          <motion.button
             onClick={onLeaveRoom}
-            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg transition-all text-sm font-medium"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-xl transition-all text-sm font-semibold flex items-center gap-2 shadow-lg"
             title="Leave chat"
           >
-            ❌ Leave
-          </button>
+            <IoClose className="text-lg" /> Leave
+          </motion.button>
         </div>
       </div>
 
       {/* Messages */}
-      <MessageList messages={messages} currentUserId={userId} />
+      <MessageList 
+        messages={messages} 
+        currentUserId={userId} 
+        partnerTyping={partnerTyping}
+        partnerNickname={partnerNickname}
+      />
 
       {/* Input */}
       <MessageInput
