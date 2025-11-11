@@ -1,14 +1,13 @@
 import axios from 'axios';
 
-// Note: The API key should always be set in environment variables
-// The fallback key is provided for demo purposes only and may be rate-limited
-// Get your own free API key from https://freeimage.host/page/api
-const FREEIMAGE_API_KEY = import.meta.env.VITE_FREEIMAGE_API_KEY || '6d207e02198a847aa98d0a2a901485a5';
-const UPLOAD_URL = 'https://freeimage.host/api/1/upload';
+// ImgBB API configuration
+// Get your own API key from https://api.imgbb.com/
+const IMGBB_API_KEY = import.meta.env.VITE_IMGBB_API_KEY || 'e2d1336255c3eac8629de4c634e96603';
+const UPLOAD_URL = 'https://api.imgbb.com/1/upload';
 
 // Warn if using default API key
-if (!import.meta.env.VITE_FREEIMAGE_API_KEY) {
-  console.warn('Warning: Using default FreeImage API key. Please set VITE_FREEIMAGE_API_KEY in your .env file to avoid rate limiting.');
+if (!import.meta.env.VITE_IMGBB_API_KEY) {
+  console.warn('Warning: Using default ImgBB API key. Please set VITE_IMGBB_API_KEY in your .env file for production use.');
 }
 
 export const uploadImage = async (file) => {
@@ -19,13 +18,12 @@ export const uploadImage = async (file) => {
     // Remove data URL prefix
     const base64Data = base64.split(',')[1];
     
-    // Create FormData - use proper multipart/form-data format
+    // Create FormData for ImgBB API
     const formData = new FormData();
-    formData.append('key', FREEIMAGE_API_KEY);
-    formData.append('source', base64Data);
-    formData.append('format', 'json');
+    formData.append('key', IMGBB_API_KEY);
+    formData.append('image', base64Data);
     
-    // Upload to FreeImage.host using POST (required for base64)
+    // Upload to ImgBB
     const response = await axios.post(UPLOAD_URL, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -33,12 +31,12 @@ export const uploadImage = async (file) => {
       timeout: 30000, // 30 second timeout
     });
     
-    // Check for successful response
-    if (response.data && response.data.status_code === 200 && response.data.image) {
+    // Check for successful response from ImgBB
+    if (response.data && response.data.success && response.data.data) {
       return {
         success: true,
-        url: response.data.image.url || response.data.image.display_url,
-        thumb: response.data.image.thumb?.url || response.data.image.url
+        url: response.data.data.url,
+        thumb: response.data.data.thumb?.url || response.data.data.medium?.url || response.data.data.url
       };
     } else if (response.data && response.data.error) {
       throw new Error(response.data.error.message || 'Upload failed');

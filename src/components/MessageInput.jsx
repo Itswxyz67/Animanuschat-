@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import EmojiPicker from 'emoji-picker-react';
+import { motion } from 'framer-motion';
 import { IoSend, IoHappy, IoImage } from 'react-icons/io5';
 import { BiLoaderAlt } from 'react-icons/bi';
 
@@ -77,7 +78,7 @@ function MessageInput({ onSendMessage, onSendImage, onTyping }) {
   };
 
   return (
-    <div className="bg-slate-800 border-t border-slate-700 px-4 py-3 shadow-lg">
+    <div className="bg-slate-900/50 backdrop-blur-xl border-t border-slate-700/50 px-4 py-4 shadow-2xl">
       {/* Emoji Picker */}
       {showEmojiPicker && (
         <div className="absolute bottom-20 right-4 z-50">
@@ -90,17 +91,19 @@ function MessageInput({ onSendMessage, onSendImage, onTyping }) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="flex items-end gap-2">
+      <form onSubmit={handleSubmit} className="flex items-end gap-3">
         {/* Image Upload Button */}
-        <button
+        <motion.button
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
-          className="p-2.5 rounded-full bg-slate-700 hover:bg-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xl"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="p-3 rounded-2xl bg-slate-700/50 backdrop-blur-sm hover:bg-slate-600/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xl border border-slate-600/50"
           title="Upload image"
         >
           {isUploading ? <BiLoaderAlt className="animate-spin" /> : <IoImage />}
-        </button>
+        </motion.button>
         <input
           ref={fileInputRef}
           type="file"
@@ -116,30 +119,34 @@ function MessageInput({ onSendMessage, onSendImage, onTyping }) {
             value={message}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            placeholder="Message..."
-            className="w-full px-4 py-2.5 bg-slate-700 border-0 rounded-3xl focus:outline-none focus:ring-2 focus:ring-ghost-accent/30 text-ghost-text resize-none min-h-[44px] max-h-32 pr-12 transition-all"
+            placeholder="Type your message..."
+            className="w-full px-5 py-3.5 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-3xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 text-ghost-text resize-none min-h-[52px] max-h-32 pr-14 transition-all font-medium placeholder-slate-500"
             rows={1}
             disabled={isUploading}
           />
-          <button
+          <motion.button
             type="button"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-xl hover:scale-110 transition-transform text-yellow-400"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-2xl hover:scale-110 transition-transform text-purple-400"
             title="Add emoji"
           >
             <IoHappy />
-          </button>
+          </motion.button>
         </div>
 
         {/* Send Button */}
-        <button
+        <motion.button
           type="submit"
           disabled={!message.trim() || isUploading}
-          className="p-3 rounded-full bg-gradient-to-br from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:from-slate-600 disabled:to-slate-600 font-semibold shadow-lg"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="p-3.5 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:from-slate-700 disabled:to-slate-700 font-semibold shadow-2xl shadow-purple-500/50"
           title="Send message"
         >
           <IoSend className="w-5 h-5" />
-        </button>
+        </motion.button>
       </form>
 
       {/* Character counter - only show when getting close to limit */}

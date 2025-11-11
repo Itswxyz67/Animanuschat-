@@ -109,30 +109,30 @@ function App() {
       {/* Settings Panel */}
       {showSettings && (
         <div 
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
           onClick={toggleSettings}
         >
           <div 
-            className="bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all"
+            className="card-glass max-w-md w-full p-8 transform transition-all"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-sky-600 bg-clip-text text-transparent flex items-center gap-2">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-black gradient-text flex items-center gap-3">
                 <IoSettingsSharp /> Settings
               </h2>
               <button
                 onClick={toggleSettings}
-                className="text-gray-400 hover:text-white transition-colors text-2xl hover:rotate-90 transform duration-300"
+                className="text-gray-400 hover:text-white transition-colors text-3xl hover:rotate-90 transform duration-300"
                 aria-label="Close settings"
               >
                 <IoClose />
               </button>
             </div>
             
-            <div className="space-y-6">
+            <div className="space-y-7">
               {/* Theme Selection */}
               <div>
-                <h3 className="text-lg font-semibold mb-3 text-gray-200 flex items-center gap-2">
+                <h3 className="text-xl font-bold mb-4 gradient-text flex items-center gap-2">
                   <RiChatSmile3Fill /> Theme
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
@@ -140,10 +140,10 @@ function App() {
                     <button
                       key={t}
                       onClick={() => changeTheme(t)}
-                      className={`px-4 py-3 rounded-xl capitalize font-medium transition-all transform hover:scale-105 flex items-center justify-center gap-2 ${
+                      className={`px-4 py-3.5 rounded-2xl capitalize font-semibold transition-all transform hover:scale-105 flex items-center justify-center gap-2 ${
                         theme === t
-                          ? 'bg-gradient-to-br from-sky-500 to-sky-600 text-white shadow-lg shadow-sky-500/30'
-                          : 'bg-slate-700 hover:bg-slate-600 text-gray-300'
+                          ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xl shadow-purple-500/40'
+                          : 'bg-slate-700/50 backdrop-blur-sm hover:bg-slate-600/50 text-gray-300 border border-slate-600/50'
                       }`}
                     >
                       <span className="text-lg">{getThemeIcon(t)}</span> {t}

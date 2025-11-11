@@ -496,38 +496,18 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
 
   if (isSearching) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-slate-900 relative overflow-hidden">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 relative overflow-hidden">
         {/* Animated background circles */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full bg-gradient-to-br from-sky-500/10 to-purple-500/10"
-              style={{
-                width: `${Math.random() * 300 + 100}px`,
-                height: `${Math.random() * 300 + 100}px`,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                x: [0, Math.random() * 100 - 50],
-                y: [0, Math.random() * 100 - 50],
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.6, 0.3],
-              }}
-              transition={{
-                duration: Math.random() * 5 + 5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-          ))}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
 
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center max-w-md w-full bg-slate-800/80 backdrop-blur-lg rounded-2xl p-8 shadow-2xl relative z-10 border border-slate-700/50"
+          className="text-center max-w-md w-full card-glass p-10 relative z-10"
         >
           <motion.div
             animate={{ 
@@ -540,13 +520,16 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
             }}
             className="text-7xl mb-6 inline-block"
           >
-            <FaUserSecret className="text-sky-400" />
+            <div className="relative">
+              <FaUserSecret className="text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text" />
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 blur-2xl opacity-50"></div>
+            </div>
           </motion.div>
-          <h2 className="text-2xl font-bold mb-3 text-transparent bg-gradient-to-r from-sky-400 to-purple-500 bg-clip-text">Finding your match...</h2>
-          <p className="text-gray-400 mb-6 text-sm">
+          <h2 className="text-3xl font-black mb-4 gradient-text">Finding your match...</h2>
+          <p className="text-gray-300 mb-8 text-base font-medium">
             {searchAttempts === 0 ? '🔍 Initializing matchmaking...' : searchAttempts < 5 ? '✨ Looking for someone with similar interests...' : `⏳ Still searching... (${searchAttempts}s)`}
           </p>
-          <div className="flex gap-2 justify-center mb-8">
+          <div className="flex gap-3 justify-center mb-10">
             {[0, 1, 2, 3, 4].map((i) => (
               <motion.div
                 key={i}
@@ -556,18 +539,20 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
                   repeat: Infinity,
                   delay: i * 0.15
                 }}
-                className="w-2 h-2 bg-gradient-to-br from-sky-400 to-sky-600 rounded-full shadow-lg"
+                className="w-3 h-3 bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-400 rounded-full shadow-xl"
               />
             ))}
           </div>
-          <button
+          <motion.button
             onClick={onLeaveRoom}
-            className="btn-secondary w-full py-3 flex items-center justify-center gap-2"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="btn-secondary w-full py-3.5 flex items-center justify-center gap-2 text-base font-semibold"
           >
             <IoClose /> Cancel Search
-          </button>
-          <p className="text-xs text-gray-600 mt-4 flex items-center justify-center gap-1">
-            <HiSparkles className="text-sky-400" /> Tip: Add interest tags for better matches!
+          </motion.button>
+          <p className="text-xs text-gray-400 mt-5 flex items-center justify-center gap-1.5">
+            <HiSparkles className="text-purple-400" /> Tip: Add interest tags for better matches!
           </p>
         </motion.div>
       </div>
@@ -575,26 +560,26 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-900">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
       {/* Header - Modern style */}
-      <div className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between shadow-lg">
+      <div className="bg-slate-900/50 backdrop-blur-xl border-b border-slate-700/50 px-4 py-4 flex items-center justify-between shadow-2xl">
         <div className="flex items-center gap-3 flex-1 min-w-0">
           {/* Avatar circle */}
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold shadow-md relative ${
-            partnerConnected ? 'bg-gradient-to-br from-sky-500 to-sky-600' : 'bg-slate-600'
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold shadow-xl relative ${
+            partnerConnected ? 'bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500' : 'bg-slate-700/50 backdrop-blur-sm'
           }`}>
             <FaUserSecret />
             {partnerConnected && (
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-slate-800 rounded-full"></span>
+              <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 border-2 border-slate-900 rounded-full animate-pulse"></span>
             )}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-base truncate">{partnerNickname || 'Ghost User'}</span>
+              <span className="font-bold text-lg truncate gradient-text">{partnerNickname || 'Ghost User'}</span>
             </div>
             {partnerTyping ? (
-              <div className="flex items-center gap-1">
-                <span className="text-sm text-sky-400">typing</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm text-purple-400 font-medium">typing</span>
                 <div className="flex gap-1">
                   <span className="typing-dot" style={{ animationDelay: '0ms' }}>•</span>
                   <span className="typing-dot" style={{ animationDelay: '200ms' }}>•</span>
@@ -602,34 +587,40 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
                 </div>
               </div>
             ) : (
-              <span className={`text-xs flex items-center gap-1 ${partnerConnected ? 'text-green-400' : 'text-gray-500'}`}>
+              <span className={`text-sm flex items-center gap-1.5 font-medium ${partnerConnected ? 'text-green-400' : 'text-gray-500'}`}>
                 {partnerConnected ? <><HiStatusOnline /> online</> : <><HiStatusOffline /> offline</>}
               </span>
             )}
           </div>
         </div>
         <div className="flex gap-2">
-          <button
+          <motion.button
             onClick={onOpenSettings}
-            className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all text-base"
+            whileHover={{ scale: 1.05, rotate: 90 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-2.5 bg-slate-700/50 backdrop-blur-sm hover:bg-slate-600/50 rounded-xl transition-all text-base border border-slate-600/50"
             title="Settings"
           >
             <IoSettingsSharp />
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={handleSkip}
-            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all text-sm font-medium flex items-center gap-1.5"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-4 py-2 bg-slate-700/50 backdrop-blur-sm hover:bg-slate-600/50 rounded-xl transition-all text-sm font-semibold flex items-center gap-2 border border-slate-600/50"
             title="Skip to next person"
           >
             <MdSkipNext className="text-lg" /> Next
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={onLeaveRoom}
-            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg transition-all text-sm font-medium flex items-center gap-1.5"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-xl transition-all text-sm font-semibold flex items-center gap-2 shadow-lg"
             title="Leave chat"
           >
             <IoClose className="text-lg" /> Leave
-          </button>
+          </motion.button>
         </div>
       </div>
 
