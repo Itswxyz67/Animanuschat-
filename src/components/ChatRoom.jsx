@@ -497,129 +497,156 @@ function ChatRoom({ userProfile, roomId, onRoomFound, onLeaveRoom, onSkip, isSea
   if (isSearching) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 relative overflow-hidden">
-        {/* Animated background circles */}
+        {/* Enhanced animated background circles */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-20 left-10 w-[500px] h-[500px] bg-indigo-500/15 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-pink-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-purple-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center max-w-md w-full card-glass p-10 relative z-10"
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          className="text-center max-w-lg w-full card-glass p-12 relative z-10"
         >
           <motion.div
             animate={{ 
               rotate: 360,
-              scale: [1, 1.1, 1]
+              scale: [1, 1.15, 1]
             }}
             transition={{ 
-              rotate: { duration: 2, repeat: Infinity, ease: "linear" },
-              scale: { duration: 1, repeat: Infinity, ease: "easeInOut" }
+              rotate: { duration: 3, repeat: Infinity, ease: "linear" },
+              scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
             }}
-            className="text-7xl mb-6 inline-block"
+            className="text-8xl mb-8 inline-block"
           >
             <div className="relative">
-              <FaUserSecret className="text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text" />
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 blur-2xl opacity-50"></div>
+              <FaUserSecret className="text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text drop-shadow-2xl" />
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 blur-3xl opacity-60 animate-pulse"></div>
             </div>
           </motion.div>
-          <h2 className="text-3xl font-black mb-4 gradient-text">Finding your match...</h2>
-          <p className="text-gray-300 mb-8 text-base font-medium">
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-4xl font-black mb-6 gradient-text"
+          >
+            Finding your match...
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-gray-300 mb-10 text-lg font-semibold bg-slate-800/40 backdrop-blur-sm px-6 py-3 rounded-2xl"
+          >
             {searchAttempts === 0 ? '🔍 Initializing matchmaking...' : searchAttempts < 5 ? '✨ Looking for someone with similar interests...' : `⏳ Still searching... (${searchAttempts}s)`}
-          </p>
-          <div className="flex gap-3 justify-center mb-10">
+          </motion.p>
+          <div className="flex gap-4 justify-center mb-12">
             {[0, 1, 2, 3, 4].map((i) => (
               <motion.div
                 key={i}
-                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+                animate={{ scale: [1, 1.8, 1], opacity: [0.4, 1, 0.4] }}
                 transition={{
                   duration: 1.5,
                   repeat: Infinity,
                   delay: i * 0.15
                 }}
-                className="w-3 h-3 bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-400 rounded-full shadow-xl"
+                className="w-3.5 h-3.5 bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-400 rounded-full shadow-2xl shadow-purple-500/50"
               />
             ))}
           </div>
           <motion.button
             onClick={onLeaveRoom}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="btn-secondary w-full py-3.5 flex items-center justify-center gap-2 text-base font-semibold"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="btn-secondary w-full py-4 flex items-center justify-center gap-2.5 text-lg font-bold shadow-xl hover:shadow-2xl"
           >
-            <IoClose /> Cancel Search
+            <IoClose className="text-xl" /> Cancel Search
           </motion.button>
-          <p className="text-xs text-gray-400 mt-5 flex items-center justify-center gap-1.5">
-            <HiSparkles className="text-purple-400" /> Tip: Add interest tags for better matches!
-          </p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-sm text-gray-400 mt-6 flex items-center justify-center gap-2 bg-purple-500/10 backdrop-blur-sm px-4 py-2.5 rounded-full"
+          >
+            <HiSparkles className="text-purple-400 text-lg" /> Tip: Add interest tags for better matches!
+          </motion.p>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
-      {/* Header - Modern style */}
-      <div className="bg-slate-900/50 backdrop-blur-xl border-b border-slate-700/50 px-4 py-4 flex items-center justify-between shadow-2xl">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          {/* Avatar circle */}
-          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold shadow-xl relative ${
-            partnerConnected ? 'bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500' : 'bg-slate-700/50 backdrop-blur-sm'
-          }`}>
-            <FaUserSecret />
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 relative overflow-hidden">
+      {/* Animated background effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      </div>
+
+      {/* Header - Enhanced style */}
+      <div className="bg-slate-900/70 backdrop-blur-2xl border-b-2 border-slate-700/40 px-6 py-4 flex items-center justify-between shadow-2xl relative z-10">
+        <div className="flex items-center gap-4 flex-1 min-w-0">
+          {/* Avatar circle with gradient ring */}
+          <div className="relative">
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-2xl relative transition-all ${
+              partnerConnected 
+                ? 'bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 animate-gradient' 
+                : 'bg-slate-700/60 backdrop-blur-md'
+            }`}>
+              <FaUserSecret />
+            </div>
             {partnerConnected && (
-              <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 border-2 border-slate-900 rounded-full animate-pulse"></span>
+              <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-green-400 border-3 border-slate-900 rounded-full animate-pulse shadow-lg shadow-green-400/50"></span>
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-lg truncate gradient-text">{partnerNickname || 'Ghost User'}</span>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-black text-xl truncate gradient-text">{partnerNickname || 'Ghost User'}</span>
             </div>
             {partnerTyping ? (
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm text-purple-400 font-medium">typing</span>
-                <div className="flex gap-1">
-                  <span className="typing-dot" style={{ animationDelay: '0ms' }}>•</span>
-                  <span className="typing-dot" style={{ animationDelay: '200ms' }}>•</span>
-                  <span className="typing-dot" style={{ animationDelay: '400ms' }}>•</span>
+              <div className="flex items-center gap-2 bg-slate-800/50 backdrop-blur-sm px-3 py-1 rounded-full inline-flex">
+                <span className="text-sm text-indigo-400 font-bold">typing</span>
+                <div className="flex gap-0.5">
+                  <span className="typing-dot" style={{ animationDelay: '0ms' }}>●</span>
+                  <span className="typing-dot" style={{ animationDelay: '200ms' }}>●</span>
+                  <span className="typing-dot" style={{ animationDelay: '400ms' }}>●</span>
                 </div>
               </div>
             ) : (
-              <span className={`text-sm flex items-center gap-1.5 font-medium ${partnerConnected ? 'text-green-400' : 'text-gray-500'}`}>
-                {partnerConnected ? <><HiStatusOnline /> online</> : <><HiStatusOffline /> offline</>}
+              <span className={`text-sm flex items-center gap-2 font-bold ${partnerConnected ? 'text-green-400' : 'text-gray-400'}`}>
+                {partnerConnected ? <><HiStatusOnline className="text-lg animate-pulse" /> Online</> : <><HiStatusOffline className="text-lg" /> Offline</>}
               </span>
             )}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2.5">
           <motion.button
             onClick={onOpenSettings}
-            whileHover={{ scale: 1.05, rotate: 90 }}
-            whileTap={{ scale: 0.95 }}
-            className="p-2.5 bg-slate-700/50 backdrop-blur-sm hover:bg-slate-600/50 rounded-xl transition-all text-base border border-slate-600/50"
+            whileHover={{ scale: 1.08, rotate: 90 }}
+            whileTap={{ scale: 0.92 }}
+            className="p-3 bg-slate-700/60 backdrop-blur-md hover:bg-slate-600/70 rounded-2xl transition-all text-lg border border-slate-600/30 shadow-lg hover:shadow-xl"
             title="Settings"
           >
             <IoSettingsSharp />
           </motion.button>
           <motion.button
             onClick={handleSkip}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="px-4 py-2 bg-slate-700/50 backdrop-blur-sm hover:bg-slate-600/50 rounded-xl transition-all text-sm font-semibold flex items-center gap-2 border border-slate-600/50"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-5 py-2.5 bg-slate-700/60 backdrop-blur-md hover:bg-slate-600/70 rounded-2xl transition-all text-sm font-bold flex items-center gap-2 border border-slate-600/30 shadow-lg hover:shadow-xl"
             title="Skip to next person"
           >
-            <MdSkipNext className="text-lg" /> Next
+            <MdSkipNext className="text-xl" /> Next
           </motion.button>
           <motion.button
             onClick={onLeaveRoom}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-xl transition-all text-sm font-semibold flex items-center gap-2 shadow-lg"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-5 py-2.5 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-2xl transition-all text-sm font-bold flex items-center gap-2 shadow-2xl shadow-red-500/40 hover:shadow-red-500/60"
             title="Leave chat"
           >
-            <IoClose className="text-lg" /> Leave
+            <IoClose className="text-xl" /> Leave
           </motion.button>
         </div>
       </div>

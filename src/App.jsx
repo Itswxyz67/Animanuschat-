@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { initializeFirebase } from './services/firebase';
 import LandingPage from './components/LandingPage';
 import ChatRoom from './components/ChatRoom';
@@ -109,53 +110,60 @@ function App() {
       {/* Settings Panel */}
       {showSettings && (
         <div 
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
+          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-xl flex items-center justify-center p-4"
           onClick={toggleSettings}
         >
-          <div 
-            className="card-glass max-w-md w-full p-8 transform transition-all"
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="card-glass max-w-md w-full p-10 transform transition-all"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl font-black gradient-text flex items-center gap-3">
+            <div className="flex items-center justify-between mb-10">
+              <h2 className="text-4xl font-black gradient-text flex items-center gap-3">
                 <IoSettingsSharp /> Settings
               </h2>
-              <button
+              <motion.button
+                whileHover={{ rotate: 90, scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={toggleSettings}
-                className="text-gray-400 hover:text-white transition-colors text-3xl hover:rotate-90 transform duration-300"
+                className="text-gray-400 hover:text-white transition-colors text-3xl"
                 aria-label="Close settings"
               >
                 <IoClose />
-              </button>
+              </motion.button>
             </div>
             
-            <div className="space-y-7">
+            <div className="space-y-8">
               {/* Theme Selection */}
               <div>
-                <h3 className="text-xl font-bold mb-4 gradient-text flex items-center gap-2">
+                <h3 className="text-2xl font-black mb-5 gradient-text flex items-center gap-2">
                   <RiChatSmile3Fill /> Theme
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   {THEMES.map((t) => (
-                    <button
+                    <motion.button
                       key={t}
                       onClick={() => changeTheme(t)}
-                      className={`px-4 py-3.5 rounded-2xl capitalize font-semibold transition-all transform hover:scale-105 flex items-center justify-center gap-2 ${
+                      whileHover={{ scale: 1.08, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={`px-5 py-4 rounded-2xl capitalize font-bold transition-all flex items-center justify-center gap-2 shadow-lg ${
                         theme === t
-                          ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xl shadow-purple-500/40'
-                          : 'bg-slate-700/50 backdrop-blur-sm hover:bg-slate-600/50 text-gray-300 border border-slate-600/50'
+                          ? 'bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xl shadow-purple-500/50'
+                          : 'bg-slate-700/60 backdrop-blur-md hover:bg-slate-600/70 text-gray-300 border-2 border-slate-600/40'
                       }`}
                     >
-                      <span className="text-lg">{getThemeIcon(t)}</span> {t}
-                    </button>
+                      <span className="text-xl">{getThemeIcon(t)}</span> {t}
+                    </motion.button>
                   ))}
                 </div>
               </div>
 
               {/* Theme Preview */}
-              <div className="border-t border-slate-700 pt-4">
-                <h3 className="text-sm font-semibold mb-2 text-gray-400">Preview</h3>
-                <div className="bg-slate-700/50 rounded-lg p-4 space-y-2">
+              <div className="border-t-2 border-slate-700/50 pt-6">
+                <h3 className="text-base font-bold mb-4 text-gray-300">Preview</h3>
+                <div className="bg-slate-700/50 backdrop-blur-md rounded-2xl p-5 space-y-3">
                   <div className="flex justify-end">
                     <div className="message-bubble message-sent max-w-[70%]">
                       Your message looks like this! 👋
@@ -170,16 +178,16 @@ function App() {
               </div>
 
               {/* About */}
-              <div className="border-t border-slate-700 pt-4 text-center">
-                <p className="text-sm text-gray-400">
+              <div className="border-t-2 border-slate-700/50 pt-6 text-center">
+                <p className="text-base text-gray-300 font-bold">
                   GhostLink v1.0.0
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-sm text-gray-400 mt-2 font-semibold">
                   Anonymous • Secure • Free
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 
